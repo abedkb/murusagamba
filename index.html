@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murusagamba Secondary School</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase JS client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:       #07101a;
+  --bg2:      #0d1b2a;
+  --bg3:      #122033;
+  --card:     #0f1e2d;
+  --card2:    #162638;
+  --border:   rgba(212,175,55,0.18);
+  --gold:     #d4af37;
+  --gold2:    #f0d060;
+  --teal:     #2a9d8f;
+  --teal2:    #38b2a3;
+  --coral:    #e76f51;
+  --blue:     #3a86ff;
+  --purple:   #8b5cf6;
+  --green:    #22c55e;
+  --text:     #f0f4ff;
+  --text2:    #a0b0c8;
+  --text3:    #506070;
+  --r:        14px;
+  --rg:       24px;
+  --shadow:   0 8px 40px rgba(0,0,0,0.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;line-height:1.5}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:rgba(212,175,55,0.3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+.hidden{display:none!important}
+.mono{font-family:'Space Mono',monospace}
+
+/* ── LOADING OVERLAY ── */
+#loadingOverlay{position:fixed;inset:0;background:rgba(7,16,26,0.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.spinner{width:40px;height:40px;border:3px solid rgba(212,175,55,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+
+/* ── LOGIN ── */
+#loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,0.07), transparent),radial-gradient(ellipse 60% 50% at 80% 80%, rgba(42,157,143,0.06), transparent),var(--bg);}
+.login-box{width:480px;max-width:95vw;background:var(--card);border:1px solid var(--border);border-radius:32px;padding:44px 40px;box-shadow:var(--shadow), 0 0 0 1px rgba(212,175,55,0.06);position:relative;overflow:hidden;}
+.login-box::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle, rgba(212,175,55,0.1), transparent 70%);border-radius:50%;pointer-events:none;}
+.login-logo{width:72px;height:72px;margin:0 auto 20px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 4px 20px rgba(212,175,55,0.3);}
+.login-title{font-size:24px;font-weight:800;text-align:center;letter-spacing:-.5px}
+.login-sub{font-size:12px;color:var(--text2);text-align:center;margin-top:4px;margin-bottom:28px}
+.login-hint{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:11px;color:var(--text3);margin-top:16px;line-height:1.8;}
+.login-hint strong{color:var(--text2)}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;height:64px;background:rgba(7,16,26,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.brand-sub{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:60px;font-size:11px;font-weight:700;letter-spacing:.3px}
+.chip-gold{background:rgba(212,175,55,0.15);color:var(--gold);border:1px solid rgba(212,175,55,0.25)}
+.chip-teal{background:rgba(42,157,143,0.15);color:var(--teal);border:1px solid rgba(42,157,143,0.25)}
+.chip-blue{background:rgba(58,134,255,0.15);color:var(--blue);border:1px solid rgba(58,134,255,0.25)}
+.chip-coral{background:rgba(231,111,81,0.15);color:var(--coral);border:1px solid rgba(231,111,81,0.25)}
+.chip-purple{background:rgba(139,92,246,0.15);color:var(--purple);border:1px solid rgba(139,92,246,0.25)}
+.lang-btn{background:var(--bg3);border:1px solid var(--border);border-radius:60px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);transition:.18s;font-family:inherit;}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── LAYOUT ── */
+.app-body{display:flex;min-height:calc(100vh - 64px)}
+.sidebar{width:240px;flex-shrink:0;padding:16px 10px;background:rgba(7,16,26,0.6);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.main{flex:1;padding:28px;overflow:auto}
+.nav-sec{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:10px 12px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:.18s;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;}
+.nav-item:hover{background:rgba(212,175,55,0.08);color:var(--text)}
+.nav-item.active{background:linear-gradient(90deg,rgba(212,175,55,0.2),rgba(212,175,55,0.04));color:var(--gold);border-left:3px solid var(--gold);font-weight:700;}
+.nav-item .icon{font-size:15px;width:20px;text-align:center}
+.nav-logout{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--coral);border:none;background:transparent;width:100%;font-family:inherit;transition:.18s;margin-top:8px}
+.nav-logout:hover{background:rgba(231,111,81,0.1)}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--rg);padding:22px;margin-bottom:20px;transition:.2s}
+.card:hover{border-color:rgba(212,175,55,0.3)}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rg);padding:20px;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.stat-gold::after{background:linear-gradient(90deg,var(--gold),var(--gold2))}.stat-teal::after{background:var(--teal)}.stat-coral::after{background:var(--coral)}.stat-blue::after{background:var(--blue)}.stat-green::after{background:var(--green)}.stat-purple::after{background:var(--purple)}
+.stat-val{font-size:28px;font-weight:800;font-family:'Space Mono',monospace;letter-spacing:-1px}
+.stat-gold .stat-val{color:var(--gold)}.stat-teal .stat-val{color:var(--teal)}.stat-coral .stat-val{color:var(--coral)}.stat-blue .stat-val{color:var(--blue)}.stat-green .stat-val{color:var(--green)}.stat-purple .stat-val{color:var(--purple)}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-top:6px;font-weight:600}
+.stat-icon{position:absolute;top:14px;right:14px;font-size:22px;opacity:.2}
+
+/* ── FORMS ── */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+input,select,textarea{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:.18s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,0.08)}
+input::placeholder{color:var(--text3)}
+select option{background:var(--bg2)}
+textarea{resize:vertical;min-height:90px;border-radius:12px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:none;border-radius:60px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.18s;letter-spacing:.2px;}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.btn:active{transform:translateY(0)}
+.btn-gold{background:var(--gold);color:#111}.btn-teal{background:var(--teal);color:#fff}.btn-coral{background:var(--coral);color:#fff}.btn-blue{background:var(--blue);color:#fff}.btn-purple{background:var(--purple);color:#fff}.btn-green{background:var(--green);color:#111}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:6px 14px;font-size:12px}.btn-xs{padding:4px 10px;font-size:11px}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);color:var(--text2);padding:10px 14px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);}
+td{padding:11px 14px;border-bottom:1px solid rgba(212,175,55,0.06);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(212,175,55,0.03)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:60px;font-size:11px;font-weight:700}
+.badge-A{background:rgba(34,197,94,.15);color:var(--green)}.badge-Bp{background:rgba(42,157,143,.15);color:var(--teal)}.badge-Bm{background:rgba(58,134,255,.15);color:var(--blue)}.badge-C{background:rgba(212,175,55,.15);color:var(--gold)}.badge-D{background:rgba(249,115,22,.15);color:#f97316}.badge-F{background:rgba(231,111,81,.15);color:var(--coral)}
+.badge-paid{background:rgba(34,197,94,.15);color:var(--green)}.badge-partial{background:rgba(212,175,55,.15);color:var(--gold)}.badge-unpaid{background:rgba(231,111,81,.15);color:var(--coral)}
+.badge-present{background:rgba(34,197,94,.15);color:var(--green)}.badge-absent{background:rgba(231,111,81,.15);color:var(--coral)}.badge-late{background:rgba(212,175,55,.15);color:var(--gold)}
+.badge-info{background:rgba(58,134,255,.12);color:var(--blue);border:1px solid rgba(58,134,255,.2)}
+.badge-admin{background:rgba(139,92,246,.15);color:var(--purple)}.badge-academic{background:rgba(42,157,143,.15);color:var(--teal)}.badge-bursar{background:rgba(212,175,55,.15);color:var(--gold)}.badge-student{background:rgba(58,134,255,.15);color:var(--blue)}
+
+/* ── ALERTS ── */
+.alert{padding:11px 18px;border-radius:60px;font-size:13px;margin-bottom:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.alert-success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green)}
+.alert-danger{background:rgba(231,111,81,.1);border:1px solid rgba(231,111,81,.25);color:var(--coral)}
+.alert-info{background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.2);color:var(--gold)}
+
+/* ── INFO BOXES ── */
+.info-box{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.18);border-radius:12px;padding:11px 16px;font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7}
+.info-box strong{color:var(--gold)}
+.warn-box{background:rgba(231,111,81,.07);border:1px solid rgba(231,111,81,.2);border-radius:12px;padding:11px 16px;font-size:12px;color:var(--coral);margin-bottom:14px}
+
+/* ── PAGE HEADER ── */
+.page-title{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+.page-desc{font-size:13px;color:var(--text2);margin-bottom:24px}
+
+/* ── TABS ── */
+.tab-row{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--border);border-radius:60px;padding:3px;margin-bottom:20px;width:fit-content;flex-wrap:wrap}
+.tab-btn{padding:7px 18px;border-radius:60px;border:none;background:transparent;color:var(--text2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:.18s}
+.tab-btn.active{background:var(--gold);color:#111}
+
+/* ── CLASS SECTIONS ── */
+.class-section{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.class-section-title{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.class-pill{display:inline-flex;align-items:center;padding:3px 12px;border-radius:60px;font-size:11px;font-weight:700;background:rgba(212,175,55,.1);color:var(--gold);border:1px solid rgba(212,175,55,.2)}
+.subj-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:60px;font-size:11px;font-weight:700;background:rgba(42,157,143,.1);color:var(--teal);border:1px solid rgba(42,157,143,.2)}
+
+/* ── ANNOUNCEMENTS ── */
+.ann-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;transition:.18s;}
+.ann-card:hover{border-color:rgba(212,175,55,.35)}
+.ann-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gold)}
+.ann-card.teachers::before{background:var(--teal)}.ann-card.parents::before{background:var(--blue)}.ann-card.all::before{background:var(--purple)}
+.ann-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.ann-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px}
+.ann-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ann-meta span{font-size:11px;color:var(--text3)}
+.ann-priority{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:60px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.priority-high{background:rgba(231,111,81,.15);color:var(--coral)}.priority-normal{background:rgba(42,157,143,.15);color:var(--teal)}.priority-low{background:rgba(212,175,55,.15);color:var(--gold)}
+.recip-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:60px;font-size:10px;font-weight:700}
+.recip-all{background:rgba(139,92,246,.15);color:var(--purple)}.recip-teachers{background:rgba(42,157,143,.15);color:var(--teal)}.recip-parents{background:rgba(58,134,255,.15);color:var(--blue)}.recip-class{background:rgba(212,175,55,.15);color:var(--gold)}
+
+/* ── MESSAGES ── */
+.msg-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;transition:.18s;cursor:pointer;}
+.msg-card:hover{border-color:rgba(212,175,55,.35);background:var(--bg3)}
+.msg-card.unread{border-left:3px solid var(--gold)}
+.msg-card.unread .msg-title{color:var(--gold)}
+.msg-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.msg-preview{font-size:12px;color:var(--text2);line-height:1.5}
+.msg-meta{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.unread-dot{width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal-box{background:var(--card2);border:1px solid var(--border);border-radius:24px;padding:30px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:18px}
+
+/* ── PHONE LIST ── */
+.phone-list-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:12px;font-family:'Space Mono',monospace;line-height:1.9;color:var(--text2);max-height:120px;overflow-y:auto;word-break:break-all;}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* ── ATTENDANCE ── */
+.att-btn{padding:5px 12px;border:1px solid var(--border);border-radius:60px;font-size:11px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--text2);transition:.15s;font-family:inherit}
+.att-btn:hover{border-color:var(--gold);color:var(--gold)}
+.att-btn.sel-P{background:rgba(34,197,94,.18);border-color:var(--green);color:var(--green)}
+.att-btn.sel-A{background:rgba(231,111,81,.18);border-color:var(--coral);color:var(--coral)}
+.att-btn.sel-L{background:rgba(212,175,55,.18);border-color:var(--gold);color:var(--gold)}
+
+/* ── TIMETABLE ── */
+.tt-grid{display:grid;grid-template-columns:90px repeat(5,1fr);gap:3px;font-size:12px}
+.tt-head{background:var(--bg3);padding:8px;text-align:center;font-weight:700;color:var(--text2);border-radius:8px;font-size:11px;text-transform:uppercase}
+.tt-time{background:var(--bg3);padding:8px;text-align:center;font-weight:600;color:var(--text3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.tt-cell{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px;min-height:58px;cursor:pointer;transition:.18s;position:relative}
+.tt-cell:hover{border-color:var(--gold)}
+.tt-cell.filled{background:rgba(212,175,55,.07);border-color:rgba(212,175,55,.25)}
+.tt-cell .subj{font-weight:700;color:var(--gold);font-size:12px}
+.tt-cell .teach{font-size:10px;color:var(--text2);margin-top:2px}
+
+/* ── REPORT ── */
+.report-box{border:2px solid var(--gold);border-radius:20px;padding:28px;background:var(--bg)}
+
+/* ── BAR CHART ── */
+.bar-wrap{display:flex;align-items:center;gap:10px;margin:5px 0}
+.bar-label{font-size:11px;color:var(--text2);width:120px;flex-shrink:0;text-align:right}
+.bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--gold);transition:width .6s ease}
+.bar-val{font-size:11px;font-weight:700;width:40px;font-family:'Space Mono',monospace;color:var(--gold)}
+
+@media(max-width:700px){.sidebar{display:none}.stats-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
+@media print{.sidebar,.topbar,.btn,.tab-row,.nav-item,.page-desc{display:none!important}body,html{background:#fff;color:#000}.card{border:1px solid #ccc;background:#fff}.main{padding:0}}
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Connecting to database…</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginPage" class="hidden">
+  <div class="login-box">
+    <div class="login-logo">🎓</div>
+    <div class="login-title">Mursagamba Secondary School</div>
+    <div class="login-sub">School Management System &nbsp;|&nbsp; Mfumo wa Usimamizi</div>
+    <div id="loginAlert" style="margin-bottom:10px"></div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Username / Admission No.</label>
+      <input id="username" placeholder="e.g. admin or MSS-001">
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Password / Nenosiri</label>
+      <input id="password" type="password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-gold" style="width:100%;justify-content:center;padding:12px" onclick="login()">
+      <i class="fas fa-sign-in-alt"></i> Sign In / Ingia
+    </button>
+    <div class="login-hint">
+      <strong>Demo Credentials:</strong><br>
+      Admin / Head Teacher: <code>admin</code> / <code>1234</code><br>
+      Teachers: username + password (set by admin)<br>
+      Students: Admission No. + Phone number
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appWrap" class="hidden">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <div class="brand-name">Murusagamba Secondary School</div>
+        <div class="brand-sub">School Management System</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="lang-btn" onclick="toggleLang()"><i class="fas fa-globe"></i> <span id="langLabel">Kiswahili</span></button>
+      <span id="topChip" class="chip chip-gold"></span>
+      <span id="topName" style="font-size:13px;font-weight:600;color:var(--text2)"></span>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="main" id="mainContent"></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   SUPABASE INIT
+════════════════════════════════════════ */
+const SUPABASE_URL  = "https://mdyktdczcngeenumwkyt.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1keWt0ZGN6Y25nZWVudW13a3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NDMxOTYsImV4cCI6MjA5MjAxOTE5Nn0.J5OTYNawZ6l_dKNYrNpwm2_fabXYraE7Ty8BALVZRM8";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ════════════════════════════════════════
+   DB HELPERS — thin wrappers around Supabase
+════════════════════════════════════════ */
+async function dbGet(table, filters={}) {
+  let q = sb.from(table).select('*');
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { data, error } = await q.order('created_at', { ascending: true });
+  if (error) { console.error(`dbGet ${table}`, error); return []; }
+  return data || [];
+}
+async function dbInsert(table, row) {
+  const { data, error } = await sb.from(table).insert(row).select().single();
+  if (error) throw error;
+  return data;
+}
+async function dbUpdate(table, id, fields) {
+  const { data, error } = await sb.from(table).update(fields).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+}
+async function dbDelete(table, id) {
+  const { error } = await sb.from(table).delete().eq('id', id);
+  if (error) throw error;
+}
+async function dbDeleteWhere(table, filters={}) {
+  let q = sb.from(table).delete();
+  for (const [k,v] of Object.entries(filters)) q = q.eq(k, v);
+  const { error } = await q;
+  if (error) throw error;
+}
+
+/* In-memory cache to reduce repeated fetches */
+const cache = {};
+async function cached(key, fn) {
+  if (cache[key]) return cache[key];
+  cache[key] = await fn();
+  return cache[key];
+}
+function clearCache(...keys) { keys.forEach(k => delete cache[k]); }
+function clearAllCache() { Object.keys(cache).forEach(k => delete cache[k]); }
+
+/* ════════════════════════════════════════
+   LANGUAGE
+════════════════════════════════════════ */
+let lang = "en";
+const TL = {
+  en:{ dashboard:"Dashboard", students:"Students", staff:"Staff & Roles", subjects:"Subjects", results:"Results", fees:"Fee Records", expenses:"Expenses", finreport:"Finance Report", announcements:"Announcements", attendance:"Attendance", myassignments:"My Classes", mymessages:"Inbox", sresults:"My Results", sreport:"Report Card", sfees:"My Fees", timetable:"Timetable" },
+  sw:{ dashboard:"Dashibodi", students:"Wanafunzi", staff:"Wafanyakazi", subjects:"Masomo", results:"Matokeo", fees:"Ada", expenses:"Matumizi", finreport:"Ripoti ya Fedha", announcements:"Matangazo", attendance:"Mahadhirio", myassignments:"Masomo Yangu", mymessages:"Kisanduku cha Barua", sresults:"Matokeo Yangu", sreport:"Karatasi ya Alama", sfees:"Ada Zangu", timetable:"Ratiba" }
+};
+function __(k){ return TL[lang][k]||k; }
+function toggleLang(){ lang=lang==="en"?"sw":"en"; document.getElementById("langLabel").textContent=lang==="en"?"Kiswahili":"English"; buildSidebar(); renderSection(activeSec); }
+
+/* ════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════ */
+const DEFAULT_SUBJECTS = ["Mathematics","Physics","Chemistry","Biology","Geography","Kiswahili","English Language","Civics","History","Bookkeeping","Commerce","Physical Education"];
+const DEFAULT_ROLES    = ["Admin/Head Teacher","Class Teacher","Academic Teacher","Sport Master","Store Keeper","Discipline Master","Matron","Patron","Bursar/Cashier"];
+const ACCESS_LEVELS    = {"Admin/Head Teacher":"admin","Bursar/Cashier":"bursar","Class Teacher":"academic","Sport Master":"academic","Store Keeper":"academic","Discipline Master":"academic","Matron":"academic","Patron":"academic","Academic Teacher":"academic"};
+const EXP_CATS = ["Salary","Utility","Supplies","Maintenance","Transport","Food & Catering","Repairs","Events","Other"];
+const DAYS    = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const PERIODS = ["7:30–8:30","8:30–9:30","9:30–10:30","10:30–11:00 (Break)","11:00–12:00","12:00–13:00","13:00–14:00 (Lunch)","14:00–15:00"];
+
+function grade(m){ if(m>=75)return"A";if(m>=70)return"B+";if(m>=60)return"B-";if(m>=50)return"C";if(m>=40)return"D";return"F"; }
+function gradeBadge(g){ const m={A:"badge-A","B+":"badge-Bp","B-":"badge-Bm",C:"badge-C",D:"badge-D",F:"badge-F"};return`<span class="badge ${m[g]||''}">${g}</span>`; }
+const fmtMoney = n => "TSh " + Number(n||0).toLocaleString();
+const today    = () => new Date().toISOString().split("T")[0];
+const newId    = () => crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+
+/* ════════════════════════════════════════
+   ROLE HELPERS
+════════════════════════════════════════ */
+async function getAllRoles(){ const c=await dbGet("custom_roles"); return [...DEFAULT_ROLES,...c.map(r=>r.name)]; }
+function getAccessLevel(role){ if(ACCESS_LEVELS[role]) return ACCESS_LEVELS[role]; return "academic"; }
+
+/* ════════════════════════════════════════
+   ASSIGNMENT HELPERS
+════════════════════════════════════════ */
+async function getMyAssignments(staffId){ return dbGet("teacher_assignments",{staff_id:staffId}); }
+async function getMyScope(){
+  if(!CU) return [];
+  const al=CU.access_level||CU.role;
+  if(al==="admin"||al==="bursar") return "all";
+  return getMyAssignments(CU.id);
+}
+async function canEnterResult(studentId,subject){
+  const scope=await getMyScope();
+  if(scope==="all") return true;
+  const stuList=await dbGet("students",{id:studentId});
+  const stu=stuList[0]; if(!stu) return false;
+  return scope.some(a=>a.class_name===stu.class&&a.subject===subject);
+}
+async function getMyClasses(){
+  const scope=await getMyScope();
+  if(scope==="all"){ const s=await dbGet("students"); return [...new Set(s.map(x=>x.class))].sort(); }
+  return [...new Set(scope.map(a=>a.class_name))].sort();
+}
+async function getMySubjectsForClass(cls){
+  const scope=await getMyScope();
+  if(scope==="all") return (await dbGet("subjects")).map(s=>s.name);
+  return scope.filter(a=>a.class_name===cls).map(a=>a.subject);
+}
+async function getAllClasses(){ const s=await dbGet("students"); return [...new Set(s.map(x=>x.class))].sort(); }
+
+/* ════════════════════════════════════════
+   AUTH
+════════════════════════════════════════ */
+let CU = null;
+
+async function login(){
+  const u=document.getElementById("username").value.trim();
+  const p=document.getElementById("password").value.trim();
+  showLoading("Authenticating…");
+  try {
+    // Try staff login
+    const { data:staffRows } = await sb.from("staff").select("*").eq("username",u).eq("password",p);
+    if(staffRows&&staffRows.length){ CU={...staffRows[0]}; hideLoading(); bootApp(); return; }
+    // Try student login (adm number + phone)
+    const { data:stuRows } = await sb.from("students").select("*").eq("adm",u).eq("phone",p);
+    if(stuRows&&stuRows.length){ CU={access_level:"student",role:"student",data:stuRows[0],name:stuRows[0].name}; hideLoading(); bootApp(); return; }
+    hideLoading();
+    document.getElementById("loginAlert").innerHTML=`<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> Invalid credentials / Taarifa zisizo sahihi</div>`;
+    setTimeout(()=>document.getElementById("loginAlert").innerHTML="",3500);
+  } catch(e){ hideLoading(); console.error(e); }
+}
+
+function bootApp(){
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("appWrap").classList.remove("hidden");
+  const al=CU.access_level||CU.role;
+  const chipMap={admin:"chip-purple",academic:"chip-teal",bursar:"chip-gold",student:"chip-blue"};
+  document.getElementById("topChip").textContent=CU.role_title||(al==="student"?"Student":al);
+  document.getElementById("topChip").className="chip "+(chipMap[al]||"chip-gold");
+  document.getElementById("topName").textContent=CU.name;
+  buildSidebar();
+}
+
+function logout(){ location.reload(); }
+
+/* ════════════════════════════════════════
+   LOADING HELPERS
+════════════════════════════════════════ */
+function showLoading(msg="Loading…"){
+  document.getElementById("loadingOverlay").classList.remove("hidden");
+  document.querySelector("#loadingOverlay .loading-text").textContent=msg;
+}
+function hideLoading(){ document.getElementById("loadingOverlay").classList.add("hidden"); }
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+const MENUS = {
+  admin:[{sec:"dashboard",icon:"📊",k:"dashboard"},{sec:"announcements",icon:"📢",k:"announcements"},{sec:"students",icon:"👥",k:"students"},{sec:"staff",icon:"👩‍🏫",k:"staff"},{sec:"results",icon:"📋",k:"results"},{sec:"fees",icon:"💳",k:"fees"},{sec:"expenses",icon:"📉",k:"expenses"},{sec:"finreport",icon:"📈",k:"finreport"},{sec:"attendance",icon:"✅",k:"attendance"},{sec:"subjects",icon:"📚",k:"subjects"},{sec:"timetable",icon:"🗓",k:"timetable"}],
+  bursar:[{sec:"dashboard",icon:"📊",k:"dashboard"},{sec:"mymessages",icon:"📬",k:"mymessages"},{sec:"fees",icon:"💳",k:"fees"},{sec:"expenses",icon:"📉",k:"expenses"},{sec:"finreport",icon:"📈",k:"finreport"},{sec:"students",icon:"👥",k:"students"}],
+  academic:[{sec:"dashboard",icon:"📊",k:"dashboard"},{sec:"mymessages",icon:"📬",k:"mymessages"},{sec:"myassignments",icon:"🎯",k:"myassignments"},{sec:"results",icon:"📋",k:"results"},{sec:"attendance",icon:"✅",k:"attendance"},{sec:"timetable",icon:"🗓",k:"timetable"},{sec:"students",icon:"👥",k:"students"}],
+  student:[{sec:"mymessages",icon:"📬",k:"mymessages"},{sec:"sresults",icon:"📋",k:"sresults"},{sec:"sreport",icon:"📄",k:"sreport"},{sec:"sfees",icon:"💳",k:"sfees"}]
+};
+let activeSec="";
+function buildSidebar(){
+  const al=CU.access_level||CU.role;
+  const menu=MENUS[al]||[];
+  let html=`<div class="nav-sec">Menu</div>`;
+  menu.forEach(m=>{ html+=`<button class="nav-item" id="nav-${m.sec}" onclick="showSec('${m.sec}')"><span class="icon">${m.icon}</span>${__(m.k)}</button>`; });
+  html+=`<div style="flex:1"></div><button class="nav-logout" onclick="logout()"><span class="icon">🚪</span>${lang==="en"?"Logout":"Toka"}</button>`;
+  document.getElementById("sidebar").innerHTML=html;
+  if(!activeSec) activeSec=menu[0]?.sec||"dashboard";
+  showSec(activeSec);
+}
+function showSec(sec){
+  if(activeSec){ const p=document.getElementById("nav-"+activeSec); if(p)p.classList.remove("active"); }
+  activeSec=sec;
+  const c=document.getElementById("nav-"+sec); if(c)c.classList.add("active");
+  renderSection(sec);
+}
+
+/* ════════════════════════════════════════
+   ROUTER
+════════════════════════════════════════ */
+function renderSection(sec){
+  document.getElementById("mainContent").innerHTML="";
+  ({
+    dashboard:renderDashboard, students:renderStudents, staff:renderStaff,
+    results:renderResults, fees:renderFees, expenses:renderExpenses,
+    finreport:renderFinReport, attendance:renderAttendance, subjects:renderSubjects,
+    timetable:renderTimetable, myassignments:renderMyAssignments,
+    announcements:renderAnnouncements, mymessages:renderMyMessages,
+    sresults:renderStudentResults, sreport:renderStudentReport, sfees:renderStudentFees
+  }[sec]||renderDashboard)();
+}
+
+function flash(msg,type="success"){
+  const a=document.createElement("div");
+  a.className=`alert alert-${type}`;
+  a.innerHTML=`<i class="fas fa-${type==="success"?"check-circle":"exclamation-triangle"}"></i> ${msg}`;
+  document.getElementById("mainContent").prepend(a);
+  setTimeout(()=>a.remove(),3800);
+}
+function ph(title,desc){ return `<div class="page-title">${title}</div><div class="page-desc">${desc}</div>`; }
+
+/* ════════════════════════════════════════
+   DASHBOARD
+════════════════════════════════════════ */
+async function renderDashboard(){
+  const mc=document.getElementById("mainContent");
+  mc.innerHTML=ph("Dashboard","Loading…");
+  showLoading("Fetching dashboard data…");
+  const al=CU.access_level||CU.role;
+  try {
+    const [students,staffAll,fees,expenses,results,anns] = await Promise.all([
+      dbGet("students"), dbGet("staff"), dbGet("fees"), dbGet("expenses"), dbGet("results"),
+      dbGet("announcements")
+    ]);
+    const totalFees=fees.reduce((a,b)=>a+Number(b.amount),0);
+    const totalExp=expenses.reduce((a,b)=>a+Number(b.amount),0);
+    const net=totalFees-totalExp;
+    const recentAnns=anns.slice(-3).reverse();
+    let stats="";
+    if(al==="admin"){
+      stats=`
+        <div class="stat-card stat-blue"><div class="stat-icon">👥</div><div class="stat-val">${students.length}</div><div class="stat-label">Total Students</div></div>
+        <div class="stat-card stat-teal"><div class="stat-icon">👩‍🏫</div><div class="stat-val">${staffAll.length}</div><div class="stat-label">Staff Members</div></div>
+        <div class="stat-card stat-gold"><div class="stat-icon">💰</div><div class="stat-val">${fmtMoney(totalFees)}</div><div class="stat-label">Fees Collected</div></div>
+        <div class="stat-card stat-coral"><div class="stat-icon">💸</div><div class="stat-val">${fmtMoney(totalExp)}</div><div class="stat-label">Total Expenses</div></div>
+        <div class="stat-card ${net>=0?"stat-green":"stat-coral"}"><div class="stat-icon">📈</div><div class="stat-val">${fmtMoney(Math.abs(net))}</div><div class="stat-label">${net>=0?"Net Surplus":"Net Deficit"}</div></div>`;
+    } else if(al==="academic"){
+      const assigns=await getMyAssignments(CU.id);
+      const myClasses=[...new Set(assigns.map(a=>a.class_name))];
+      const myResults=results.filter(r=>r.entered_by===CU.name);
+      const unread=await getUnreadCount();
+      stats=`
+        <div class="stat-card stat-blue"><div class="stat-val">${myClasses.length}</div><div class="stat-label">My Classes</div></div>
+        <div class="stat-card stat-teal"><div class="stat-val">${assigns.length}</div><div class="stat-label">My Assignments</div></div>
+        <div class="stat-card stat-gold"><div class="stat-val">${myResults.length}</div><div class="stat-label">Results Entered</div></div>
+        <div class="stat-card stat-coral"><div class="stat-val">${unread}</div><div class="stat-label">Unread Messages</div></div>`;
+    } else if(al==="bursar"){
+      const unread=await getUnreadCount();
+      stats=`
+        <div class="stat-card stat-gold"><div class="stat-val">${fmtMoney(totalFees)}</div><div class="stat-label">Fees Collected</div></div>
+        <div class="stat-card stat-coral"><div class="stat-val">${fmtMoney(totalExp)}</div><div class="stat-label">Expenses</div></div>
+        <div class="stat-card ${net>=0?"stat-green":"stat-coral"}"><div class="stat-val">${fmtMoney(Math.abs(net))}</div><div class="stat-label">${net>=0?"Surplus":"Deficit"}</div></div>
+        <div class="stat-card stat-blue"><div class="stat-val">${unread}</div><div class="stat-label">Unread Messages</div></div>`;
+    } else if(al==="student"){
+      const me=CU.data;
+      const myRes=results.filter(r=>r.student_id==me.id);
+      const myFees=fees.filter(f=>f.student_id==me.id);
+      const paid=myFees.reduce((a,b)=>a+Number(b.amount),0);
+      const due=myFees.reduce((a,b)=>a+Number(b.total_due||0),0);
+      const unread=await getUnreadCount();
+      stats=`
+        <div class="stat-card stat-blue"><div class="stat-val">${myRes.length}</div><div class="stat-label">Results Recorded</div></div>
+        <div class="stat-card stat-gold"><div class="stat-val">${fmtMoney(paid)}</div><div class="stat-label">Fees Paid</div></div>
+        <div class="stat-card ${due>paid?"stat-coral":"stat-green"}"><div class="stat-val">${fmtMoney(Math.max(0,due-paid))}</div><div class="stat-label">Balance Due</div></div>
+        <div class="stat-card stat-coral"><div class="stat-val">${unread}</div><div class="stat-label">Unread Messages</div></div>`;
+    }
+    const recentRes=results.slice(-4).reverse();
+    mc.innerHTML=`
+      ${ph("Dashboard","Welcome back, "+CU.name+(CU.role_title?" — "+CU.role_title:""))}
+      <div class="stats-grid">${stats}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-title">📢 Recent Announcements</div>
+          ${recentAnns.length?recentAnns.map(a=>`
+            <div class="ann-card ${a.sent_to}">
+              <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+                <span class="ann-priority priority-${a.priority||'normal'}">${a.priority||"normal"}</span>
+                <span class="recip-badge recip-${a.sent_to==="all"?"all":a.sent_to==="teachers"?"teachers":"parents"}">${a.sent_to==="all"?"Everyone":a.sent_to==="teachers"?"Teachers":"Parents"}</span>
+              </div>
+              <div class="ann-title">${a.title}</div>
+              <div class="ann-body">${a.message.substring(0,80)}${a.message.length>80?"…":""}</div>
+              <div class="ann-meta"><span>📅 ${new Date(a.created_at).toLocaleDateString()}</span><span>✍️ ${a.sender}</span></div>
+            </div>`).join(""):`<p style="color:var(--text3)">No announcements yet</p>`}
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Recent Results</div>
+          <table><tr><th>Student</th><th>Subject</th><th>Marks</th><th>Grade</th></tr>
+            ${recentRes.map(r=>{const s=students.find(x=>x.id==r.student_id);return`<tr><td><strong>${s?s.name:"?"}</strong></td><td>${r.subject}</td><td>${r.marks}</td><td>${gradeBadge(r.grade)}</td></tr>`;}).join("")||"<tr><td colspan='4' style='color:var(--text3)'>No results yet</td></tr>"}
+          </table>
+        </div>
+      </div>`;
+  } catch(e){ mc.innerHTML=`<div class="alert alert-danger">Failed to load dashboard: ${e.message}</div>`; }
+  finally { hideLoading(); }
+}
+
+/* ════════════════════════════════════════
+   STUDENTS
+════════════════════════════════════════ */
+async function renderStudents(){
+  const mc=document.getElementById("mainContent");
+  const canEdit=(CU.access_level||CU.role)==="admin";
+  showLoading("Loading students…");
+  const classes=await getAllClasses();
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Students","Manage student enrollment and records")}
+    ${canEdit?`
+    <div class="card">
+      <div class="card-title">➕ Enroll New Student</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Full Name *</label><input id="sname" placeholder="Student full name"></div>
+        <div class="form-group"><label>Class *</label>
+          <select id="sclass" onchange="onSClassChange()">
+            <option value="">Select class</option>
+            ${classes.map(c=>`<option>${c}</option>`).join("")}
+            <option value="__new__">+ Create new class</option>
+          </select>
+        </div>
+        <div id="sclassNewWrap" class="form-group hidden"><label>New Class Name</label><input id="sclassNew" placeholder="e.g. Form 4A"></div>
+        <div class="form-group"><label>Phone (= Login Password) *</label><input id="sphone" placeholder="0711234567"></div>
+        <div class="form-group"><label>Parent / Guardian Name</label><input id="sparent" placeholder="Parent full name"></div>
+        <div class="form-group"><label>Parent Phone</label><input id="sparentphone" placeholder="0712345678"></div>
+        <div class="form-group"><label>Date of Birth</label><input id="sdob" type="date"></div>
+        <div class="form-group"><label>Gender</label><select id="sgender"><option value="">Select gender</option><option>Male</option><option>Female</option></select></div>
+      </div>
+      <button class="btn btn-gold" onclick="addStudent()"><i class="fas fa-user-plus"></i> Enroll Student</button>
+    </div>`:""}
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">All Students</div>
+        <input id="stuSearch" placeholder="🔍 Search name or class…" style="width:220px" oninput="loadStudentGroups()">
+      </div>
+      <div id="studentGroups"><div style="color:var(--text3);padding:16px">Loading…</div></div>
+    </div>`;
+  loadStudentGroups();
+}
+
+function onSClassChange(){ const v=document.getElementById("sclass").value; document.getElementById("sclassNewWrap").classList.toggle("hidden",v!=="__new__"); }
+
+async function addStudent(){
+  const name=document.getElementById("sname").value.trim();
+  let cls=document.getElementById("sclass").value;
+  if(cls==="__new__") cls=document.getElementById("sclassNew").value.trim();
+  const phone=document.getElementById("sphone").value.trim();
+  if(!name||!cls||!phone){ flash("Name, Class and Phone are required.","danger"); return; }
+  showLoading("Enrolling student…");
+  try {
+    const adm="MSS-"+Date.now().toString().slice(-4).padStart(4,"0");
+    await dbInsert("students",{ adm, name, class:cls, phone, parent:document.getElementById("sparent").value.trim(), parent_phone:document.getElementById("sparentphone").value.trim(), dob:document.getElementById("sdob").value||null, gender:document.getElementById("sgender").value });
+    clearAllCache();
+    flash(`Student enrolled! Login: ${adm} / ${phone}`);
+    ["sname","sphone","sparent","sparentphone","sdob"].forEach(x=>document.getElementById(x).value="");
+    document.getElementById("sgender").value="";
+    document.getElementById("sclass").value="";
+    document.getElementById("sclassNewWrap").classList.add("hidden");
+    loadStudentGroups();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadStudentGroups(){
+  const filter=(document.getElementById("stuSearch")?.value||"").toLowerCase();
+  const canEdit=(CU.access_level||CU.role)==="admin";
+  const all=(await dbGet("students")).filter(s=>!filter||s.name.toLowerCase().includes(filter)||s.class.toLowerCase().includes(filter));
+  const groups={};
+  all.forEach(s=>{ const m=s.class.match(/Form\s*(\d+)/i); const key=m?`Form ${m[1]}`:(s.class||"Other"); if(!groups[key])groups[key]=[]; groups[key].push(s); });
+  let html="";
+  Object.keys(groups).sort().forEach(g=>{
+    const list=groups[g], subs=[...new Set(list.map(s=>s.class))];
+    html+=`<div class="class-section">
+      <div class="class-section-title">📚 ${g} <span style="color:var(--text3);font-weight:500;font-size:11px">${list.length} student${list.length!==1?"s":""} • ${subs.join(", ")}</span></div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Adm No.</th><th>Name</th><th>Class</th><th>Gender</th><th>Phone</th><th>Parent</th><th>Parent Phone</th>${canEdit?"<th>Action</th>":""}</tr>
+        ${list.map(x=>`<tr>
+          <td><span class="badge badge-info">${x.adm}</span></td>
+          <td><strong>${x.name}</strong></td>
+          <td><span class="class-pill">${x.class}</span></td>
+          <td>${x.gender||"—"}</td><td>${x.phone}</td>
+          <td>${x.parent||"—"}</td><td>${x.parent_phone||"—"}</td>
+          ${canEdit?`<td><button class="btn btn-ghost btn-xs" onclick="editStudent('${x.id}')" style="margin-right:4px">✏️</button><button class="btn btn-coral btn-xs" onclick="deleteStudent('${x.id}')">Remove</button></td>`:""}
+        </tr>`).join("")}
+      </table></div>
+    </div>`;
+  });
+  const el=document.getElementById("studentGroups");
+  if(el) el.innerHTML=html||`<div style="color:var(--text3);padding:16px">No students found.</div>`;
+}
+
+async function editStudent(id){
+  const rows=await dbGet("students",{id}); const s=rows[0]; if(!s) return;
+  const classes=await getAllClasses();
+  const modal=document.createElement("div"); modal.className="modal-overlay";
+  modal.innerHTML=`<div class="modal-box">
+    <div class="modal-title">✏️ Edit Student — ${s.name}</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Full Name</label><input id="es_name" value="${s.name}"></div>
+      <div class="form-group"><label>Class</label><select id="es_class">${classes.map(c=>`<option ${c===s.class?"selected":""}>${c}</option>`).join("")}<option value="__new__">+ New class</option></select></div>
+      <div id="es_newcls_wrap" class="form-group hidden"><label>New Class Name</label><input id="es_newcls" placeholder="e.g. Form 5A"></div>
+      <div class="form-group"><label>Phone (Password)</label><input id="es_phone" value="${s.phone}"></div>
+      <div class="form-group"><label>Parent Name</label><input id="es_parent" value="${s.parent||""}"></div>
+      <div class="form-group"><label>Parent Phone</label><input id="es_parentphone" value="${s.parent_phone||""}"></div>
+      <div class="form-group"><label>Date of Birth</label><input id="es_dob" type="date" value="${s.dob||""}"></div>
+      <div class="form-group"><label>Gender</label><select id="es_gender"><option value="">—</option><option ${s.gender==="Male"?"selected":""}>Male</option><option ${s.gender==="Female"?"selected":""}>Female</option></select></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold" onclick="saveEditStudent('${id}')"><i class="fas fa-save"></i> Save</button>
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+    </div>
+  </div>`;
+  modal.querySelector("#es_class").addEventListener("change",function(){ modal.querySelector("#es_newcls_wrap").classList.toggle("hidden",this.value!=="__new__"); });
+  document.body.appendChild(modal);
+}
+
+async function saveEditStudent(id){
+  let cls=document.getElementById("es_class").value;
+  if(cls==="__new__") cls=document.getElementById("es_newcls").value.trim();
+  showLoading("Saving…");
+  try {
+    await dbUpdate("students",id,{ name:document.getElementById("es_name").value.trim(), class:cls, phone:document.getElementById("es_phone").value.trim(), parent:document.getElementById("es_parent").value.trim(), parent_phone:document.getElementById("es_parentphone").value.trim(), dob:document.getElementById("es_dob").value||null, gender:document.getElementById("es_gender").value });
+    clearAllCache();
+    document.querySelector(".modal-overlay")?.remove();
+    flash("Student record updated!"); loadStudentGroups();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function deleteStudent(id){
+  if(!confirm("Remove this student and all their records?")) return;
+  showLoading("Removing…");
+  try {
+    await dbDelete("students",id); // CASCADE deletes results, fees, attendance
+    clearAllCache();
+    loadStudentGroups(); flash("Student removed.");
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+/* ════════════════════════════════════════
+   STAFF
+════════════════════════════════════════ */
+async function renderStaff(){
+  const mc=document.getElementById("mainContent");
+  const classes=await getAllClasses();
+  const subjects=(await dbGet("subjects")).map(s=>s.name);
+  const staffAll=await dbGet("staff");
+  const roles=await getAllRoles();
+  mc.innerHTML=`
+    ${ph("Staff & Assignments","Manage staff, roles, class assignments and subject permissions")}
+    <div class="tab-row" id="staffTabs">
+      <button class="tab-btn active" onclick="switchStaffTab('members')">👩‍🏫 Staff Members</button>
+      <button class="tab-btn" onclick="switchStaffTab('assignments')">🎯 Class & Subject Assignments</button>
+      <button class="tab-btn" onclick="switchStaffTab('roles')">🎭 Roles</button>
+    </div>
+    <!-- MEMBERS -->
+    <div id="staffMembersPanel">
+      <div class="card">
+        <div class="card-title">➕ Add Staff Member</div>
+        <div class="info-box">After adding, go to <strong>Class & Subject Assignments</strong> to assign them to classes.</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Full Name *</label><input id="stName" placeholder="Full name"></div>
+          <div class="form-group"><label>Username *</label><input id="stUser" placeholder="Login username"></div>
+          <div class="form-group"><label>Password *</label><input id="stPass" type="password" placeholder="Password"></div>
+          <div class="form-group"><label>Role / Title *</label><select id="stRole" onchange="onStaffRoleChange()">${roles.map(r=>`<option>${r}</option>`).join("")}</select></div>
+          <div class="form-group"><label>Phone</label><input id="stPhone" placeholder="0712345678"></div>
+        </div>
+        <div id="staffRoleNote" class="info-box" style="margin-bottom:12px"></div>
+        <button class="btn btn-teal" onclick="addStaff()"><i class="fas fa-user-plus"></i> Add Staff Member</button>
+      </div>
+      <div class="card"><div class="card-title">All Staff Members</div><div class="tbl-wrap"><table id="staffTable"></table></div></div>
+    </div>
+    <!-- ASSIGNMENTS -->
+    <div id="staffAssignPanel" class="hidden">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div>
+          <div class="card">
+            <div class="card-title">➕ Add Assignment</div>
+            <div class="form-grid">
+              <div class="form-group"><label>Teacher</label><select id="asStaff">${staffAll.filter(s=>s.access_level==="academic").map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}</select></div>
+              <div class="form-group"><label>Class</label><select id="asClass">${classes.map(c=>`<option>${c}</option>`).join("")}</select></div>
+              <div class="form-group"><label>Subject</label><select id="asSubject">${subjects.map(s=>`<option>${s}</option>`).join("")}</select></div>
+            </div>
+            <button class="btn btn-gold" onclick="addAssignment()">Add Assignment</button>
+          </div>
+          <div class="card"><div class="card-title">All Assignments</div><div id="allAssignsList"></div></div>
+        </div>
+        <div class="card"><div class="card-title">Overview by Teacher</div><div id="assignOverview"></div></div>
+      </div>
+    </div>
+    <!-- ROLES -->
+    <div id="staffRolesPanel" class="hidden">
+      <div class="card">
+        <div class="card-title">➕ Add Custom Role</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Role Name</label><input id="nrName" placeholder="e.g. Lab Technician"></div>
+          <div class="form-group"><label>Access Level</label><select id="nrAccess"><option value="academic">Academic (Teacher level)</option><option value="bursar">Bursar (Finance level)</option><option value="admin">Admin (Full access)</option></select></div>
+        </div>
+        <button class="btn btn-purple" onclick="addCustomRole()">Add Custom Role</button>
+      </div>
+      <div class="card"><div class="card-title">All Roles</div><div id="rolesList"></div></div>
+    </div>`;
+  onStaffRoleChange(); loadStaffTable(); loadAssignsList(); loadAssignOverview(); loadRolesList();
+}
+
+function switchStaffTab(tab){
+  const tabs=["members","assignments","roles"];
+  document.querySelectorAll("#staffTabs .tab-btn").forEach((b,i)=>b.classList.toggle("active",i===tabs.indexOf(tab)));
+  document.getElementById("staffMembersPanel").classList.toggle("hidden",tab!=="members");
+  document.getElementById("staffAssignPanel").classList.toggle("hidden",tab!=="assignments");
+  document.getElementById("staffRolesPanel").classList.toggle("hidden",tab!=="roles");
+}
+
+function onStaffRoleChange(){
+  const role=document.getElementById("stRole")?.value; if(!role) return;
+  const al=getAccessLevel(role);
+  const desc={admin:"🛡️ <strong>Admin level</strong> — Full access.",bursar:"💰 <strong>Bursar level</strong> — Finance access.",academic:"📚 <strong>Academic level</strong> — Assigned classes/subjects only."};
+  const el=document.getElementById("staffRoleNote"); if(el) el.innerHTML=desc[al]||"";
+}
+
+async function addStaff(){
+  const name=document.getElementById("stName").value.trim();
+  const username=document.getElementById("stUser").value.trim();
+  const password=document.getElementById("stPass").value.trim();
+  const role_title=document.getElementById("stRole").value;
+  if(!name||!username||!password||!role_title){ flash("All fields required.","danger"); return; }
+  showLoading("Adding staff…");
+  try {
+    await dbInsert("staff",{ name, username, password, role_title, access_level:getAccessLevel(role_title), phone:document.getElementById("stPhone").value.trim() });
+    clearAllCache();
+    ["stName","stUser","stPass","stPhone"].forEach(x=>document.getElementById(x).value="");
+    flash("Staff member added!"); loadStaffTable();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadStaffTable(){
+  const staff=await dbGet("staff");
+  const assigns=await dbGet("teacher_assignments");
+  const chipMap={admin:"badge-admin",academic:"badge-academic",bursar:"badge-bursar"};
+  let html=`<tr><th>Name</th><th>Username</th><th>Role</th><th>Access</th><th>Assignments</th><th>Phone</th><th>Action</th></tr>`;
+  staff.forEach(s=>{
+    const al=s.access_level;
+    const myA=assigns.filter(a=>a.staff_id===s.id);
+    const aHtml=myA.length?myA.map(a=>`<div style="font-size:11px;margin-bottom:2px"><span class="class-pill" style="font-size:10px">${a.class_name}</span> <span class="subj-pill" style="font-size:10px">${a.subject}</span></div>`).join(""):`<span style="color:var(--text3);font-size:11px">${al==="academic"?"No assignments":"N/A"}</span>`;
+    html+=`<tr>
+      <td><strong>${s.name}</strong></td>
+      <td><code style="color:var(--text2);font-family:'Space Mono',monospace;font-size:11px">${s.username}</code></td>
+      <td><span class="badge badge-info">${s.role_title||"Staff"}</span></td>
+      <td><span class="badge ${chipMap[al]||""}">${al}</span></td>
+      <td>${aHtml}</td><td>${s.phone||"—"}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-xs" onclick="editStaff('${s.id}')" style="margin-right:4px">✏️ Edit</button>
+        ${al==="academic"?`<button class="btn btn-teal btn-xs" onclick="openAssignModal('${s.id}')" style="margin-right:4px">🎯 Assign</button>`:""}
+        ${s.username!=="admin"?`<button class="btn btn-coral btn-xs" onclick="deleteStaff('${s.id}')">Remove</button>`:`<span style="color:var(--text3);font-size:11px">Protected</span>`}
+      </td>
+    </tr>`;
+  });
+  const el=document.getElementById("staffTable"); if(el) el.innerHTML=html;
+}
+
+async function editStaff(id){
+  const rows=await dbGet("staff",{id}); const s=rows[0]; if(!s) return;
+  const roles=await getAllRoles();
+  const modal=document.createElement("div"); modal.className="modal-overlay";
+  modal.innerHTML=`<div class="modal-box">
+    <div class="modal-title">✏️ Edit Staff — ${s.name}</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Full Name</label><input id="es2_name" value="${s.name}"></div>
+      <div class="form-group"><label>Username</label><input id="es2_user" value="${s.username}"></div>
+      <div class="form-group"><label>New Password</label><input id="es2_pass" type="password" placeholder="Leave blank to keep"></div>
+      <div class="form-group"><label>Role / Title</label><select id="es2_role">${roles.map(r=>`<option ${r===s.role_title?"selected":""}>${r}</option>`).join("")}</select></div>
+      <div class="form-group"><label>Phone</label><input id="es2_phone" value="${s.phone||""}"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold" onclick="saveEditStaff('${id}')"><i class="fas fa-save"></i> Save</button>
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+async function saveEditStaff(id){
+  const newRole=document.getElementById("es2_role").value;
+  const newPass=document.getElementById("es2_pass").value.trim();
+  const fields={ name:document.getElementById("es2_name").value.trim(), username:document.getElementById("es2_user").value.trim(), role_title:newRole, access_level:getAccessLevel(newRole), phone:document.getElementById("es2_phone").value.trim() };
+  if(newPass) fields.password=newPass;
+  showLoading("Saving…");
+  try { await dbUpdate("staff",id,fields); clearAllCache(); document.querySelector(".modal-overlay")?.remove(); flash("Staff updated!"); loadStaffTable(); }
+  catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function deleteStaff(id){
+  if(!confirm("Remove this staff member?")) return;
+  showLoading("Removing…");
+  try { await dbDelete("staff",id); clearAllCache(); loadStaffTable(); loadAssignsList(); loadAssignOverview(); flash("Staff removed."); }
+  catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function addAssignment(){
+  const staff_id=document.getElementById("asStaff").value;
+  const class_name=document.getElementById("asClass").value;
+  const subject=document.getElementById("asSubject").value;
+  if(!staff_id||!class_name||!subject){ flash("Select teacher, class and subject.","danger"); return; }
+  showLoading("Adding…");
+  try { await dbInsert("teacher_assignments",{staff_id,class_name,subject}); clearAllCache(); loadAssignsList(); loadAssignOverview(); loadStaffTable(); flash("Assignment added!"); }
+  catch(e){ flash("Already exists or error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function removeAssignment(staff_id,cls,subj){
+  if(!confirm(`Remove ${subj} — ${cls}?`)) return;
+  showLoading("Removing…");
+  try {
+    const { error } = await sb.from("teacher_assignments").delete().eq("staff_id",staff_id).eq("class_name",cls).eq("subject",subj);
+    if(error) throw error;
+    clearAllCache(); loadAssignsList(); loadAssignOverview(); loadStaffTable(); flash("Assignment removed.");
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadAssignsList(){
+  const assigns=await dbGet("teacher_assignments");
+  const staff=await dbGet("staff");
+  const el=document.getElementById("allAssignsList"); if(!el) return;
+  if(!assigns.length){ el.innerHTML=`<div style="color:var(--text3)">No assignments yet.</div>`; return; }
+  let html=`<table><tr><th>Teacher</th><th>Class</th><th>Subject</th><th>Action</th></tr>`;
+  assigns.forEach(a=>{ const s=staff.find(x=>x.id===a.staff_id); html+=`<tr><td>${s?s.name:"?"}</td><td><span class="class-pill">${a.class_name}</span></td><td><span class="subj-pill">${a.subject}</span></td><td><button class="btn btn-coral btn-xs" onclick="removeAssignment('${a.staff_id}','${a.class_name.replace(/'/g,"\\'")}','${a.subject.replace(/'/g,"\\'")}')">Remove</button></td></tr>`; });
+  el.innerHTML=html+"</table>";
+}
+
+async function loadAssignOverview(){
+  const assigns=await dbGet("teacher_assignments");
+  const staff=(await dbGet("staff")).filter(s=>s.access_level==="academic");
+  const el=document.getElementById("assignOverview"); if(!el) return;
+  let html="";
+  staff.forEach(s=>{
+    const myA=assigns.filter(a=>a.staff_id===s.id);
+    const classes=[...new Set(myA.map(a=>a.class_name))];
+    html+=`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><strong>${s.name}</strong><span class="badge badge-academic" style="font-size:10px">${s.role_title}</span></div>
+      ${myA.length?classes.map(c=>{ const subjs=myA.filter(a=>a.class_name===c).map(a=>a.subject); return`<div style="margin-bottom:5px"><span class="class-pill">${c}</span><br>${subjs.map(s=>`<span class="subj-pill" style="margin-right:3px;margin-top:3px;font-size:10px">${s}</span>`).join("")}</div>`; }).join(""):`<span style="color:var(--coral);font-size:12px">⚠ No assignments</span>`}
+    </div>`;
+  });
+  el.innerHTML=html||`<div style="color:var(--text3)">No academic staff found.</div>`;
+}
+
+async function openAssignModal(staffId){
+  const rows=await dbGet("staff",{id:staffId}); const s=rows[0];
+  const assigns=await dbGet("teacher_assignments",{staff_id:staffId});
+  const classes=await getAllClasses();
+  const subjects=(await dbGet("subjects")).map(x=>x.name);
+  const modal=document.createElement("div"); modal.className="modal-overlay";
+  modal.innerHTML=`<div class="modal-box">
+    <div class="modal-title">🎯 Assignments — ${s?s.name:"Teacher"}</div>
+    <div id="modalAList">
+      ${assigns.length?assigns.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:10px;padding:8px 12px;margin-bottom:6px"><span class="class-pill">${a.class_name}</span><span style="color:var(--text3)">→</span><span class="subj-pill">${a.subject}</span><button class="btn btn-coral btn-xs" style="margin-left:auto" onclick="removeAssignment('${staffId}','${a.class_name.replace(/'/g,"\\'")}','${a.subject.replace(/'/g,"\\'")}');refreshModalA('${staffId}')">Remove</button></div>`).join(""):
+      `<div style="color:var(--text3);padding:8px">No assignments yet.</div>`}
+    </div>
+    <div class="divider"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Class</label><select id="mAsClass">${classes.map(c=>`<option>${c}</option>`).join("")}</select></div>
+      <div class="form-group"><label>Subject</label><select id="mAsSubj">${subjects.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold" onclick="modalAddAssign('${staffId}')">Add Assignment</button>
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Close</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+async function modalAddAssign(staffId){
+  const cls=document.getElementById("mAsClass").value, subj=document.getElementById("mAsSubj").value;
+  showLoading("Adding…");
+  try { await dbInsert("teacher_assignments",{staff_id:staffId,class_name:cls,subject:subj}); clearAllCache(); refreshModalA(staffId); loadAssignsList(); loadAssignOverview(); loadStaffTable(); flash("Assignment added!"); }
+  catch(e){ flash("Already exists or error.","danger"); }
+  finally { hideLoading(); }
+}
+
+async function refreshModalA(staffId){
+  const assigns=await dbGet("teacher_assignments",{staff_id:staffId});
+  const el=document.getElementById("modalAList"); if(!el) return;
+  el.innerHTML=assigns.length?assigns.map(a=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:10px;padding:8px 12px;margin-bottom:6px"><span class="class-pill">${a.class_name}</span><span style="color:var(--text3)">→</span><span class="subj-pill">${a.subject}</span><button class="btn btn-coral btn-xs" style="margin-left:auto" onclick="removeAssignment('${staffId}','${a.class_name.replace(/'/g,"\\'")}','${a.subject.replace(/'/g,"\\'")}');refreshModalA('${staffId}')">Remove</button></div>`).join(""):
+  `<div style="color:var(--text3);padding:8px">No assignments.</div>`;
+}
+
+async function addCustomRole(){
+  const name=document.getElementById("nrName").value.trim();
+  const access_level=document.getElementById("nrAccess").value;
+  if(!name){ flash("Enter a role name.","danger"); return; }
+  showLoading("Adding role…");
+  try { await dbInsert("custom_roles",{name,access_level}); clearAllCache(); document.getElementById("nrName").value=""; loadRolesList(); flash("Custom role added."); }
+  catch(e){ flash("Role exists or error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadRolesList(){
+  const custom=await dbGet("custom_roles");
+  const chipMap={admin:"badge-admin",academic:"badge-academic",bursar:"badge-bursar"};
+  const defaultList=DEFAULT_ROLES.map(r=>({name:r,access_level:ACCESS_LEVELS[r]||"academic",isDefault:true}));
+  const all=[...defaultList,...custom.map(r=>({...r,isDefault:false}))];
+  let html=`<table><tr><th>Role Name</th><th>Access Level</th><th>Type</th><th>Action</th></tr>`;
+  all.forEach(r=>{ html+=`<tr><td><strong>${r.name}</strong></td><td><span class="badge ${chipMap[r.access_level]||""}">${r.access_level}</span></td><td>${r.isDefault?`<span class="badge badge-info">Built-in</span>`:`<span class="badge badge-paid">Custom</span>`}</td><td>${!r.isDefault?`<button class="btn btn-coral btn-xs" onclick="deleteCustomRole('${r.id}')">Remove</button>`:"—"}</td></tr>`; });
+  const el=document.getElementById("rolesList"); if(el) el.innerHTML=html+"</table>";
+}
+
+async function deleteCustomRole(id){
+  if(!confirm("Remove this role?")) return;
+  await dbDelete("custom_roles",id); clearAllCache(); loadRolesList(); flash("Role removed.");
+}
+
+/* ════════════════════════════════════════
+   MY ASSIGNMENTS
+════════════════════════════════════════ */
+async function renderMyAssignments(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading…");
+  const assigns=await getMyAssignments(CU.id);
+  const students=await dbGet("students");
+  const results=await dbGet("results");
+  hideLoading();
+  const classes=[...new Set(assigns.map(a=>a.class_name))].sort();
+  mc.innerHTML=`
+    ${ph("My Assignments","Classes and subjects assigned to you")}
+    <div class="info-box">🔒 <strong>Your access is scoped to your assignments.</strong></div>
+    ${!assigns.length?`<div class="warn-box">⚠ No assignments yet. The Admin must assign you to classes and subjects first.</div>`:""}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px">
+      ${classes.map(c=>{
+        const subjs=assigns.filter(a=>a.class_name===c).map(a=>a.subject);
+        const cnt=students.filter(s=>s.class===c).length;
+        const resCnt=results.filter(r=>r.entered_by===CU.name&&students.filter(s=>s.class===c).map(s=>s.id).includes(r.student_id)).length;
+        return`<div class="card" style="margin-bottom:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="class-pill">${c}</span><span style="font-size:12px;color:var(--text2)">${cnt} students</span></div>
+          <div style="margin-bottom:10px">${subjs.map(s=>`<span class="subj-pill" style="margin-right:4px;margin-bottom:4px">${s}</span>`).join("")}</div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text2)">Results entered by me</span><strong style="color:var(--gold)">${resCnt}</strong></div>
+        </div>`;
+      }).join("")}
+    </div>`;
+}
+
+/* ════════════════════════════════════════
+   RESULTS
+════════════════════════════════════════ */
+async function renderResults(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading results…");
+  const al=CU.access_level||CU.role;
+  const isAdmin=al==="admin";
+  const assigns=await getMyAssignments(CU.id);
+  const allStudents=await dbGet("students");
+  const results=await dbGet("results");
+  const myClasses=await getMyClasses();
+  const subjects=(await dbGet("subjects")).map(s=>s.name);
+  hideLoading();
+
+  let scopeNote="";
+  if(al==="academic"){
+    if(!assigns.length) scopeNote=`<div class="warn-box">⚠ <strong>No assignments yet.</strong> Admin must assign you first.</div>`;
+    else scopeNote=`<div class="info-box">🔒 <strong>Scope:</strong> ${assigns.map(a=>`<span class="class-pill" style="font-size:11px;margin-right:4px">${a.class_name}</span><span class="subj-pill" style="font-size:11px;margin-right:8px">${a.subject}</span>`).join("")}</div>`;
+  }
+
+  const exams=[...new Set(results.map(r=>r.exam))];
+  mc.innerHTML=`
+    ${ph("Results","Enter and view academic results")}
+    ${scopeNote}
+    ${(isAdmin||assigns.length>0)?`
+    <div class="card">
+      <div class="card-title">📝 Enter Result</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Class</label>
+          <select id="resClass" onchange="onResClassChange()">
+            ${isAdmin?`<option value="">— All Classes —</option>${[...new Set(allStudents.map(s=>s.class))].sort().map(c=>`<option>${c}</option>`).join("")}`:myClasses.map(c=>`<option>${c}</option>`).join("")}
+          </select>
+        </div>
+        <div class="form-group"><label>Student</label><select id="resStudent"></select></div>
+        <div class="form-group"><label>Subject</label><select id="resSubject"></select></div>
+        <div class="form-group"><label>Exam / Term</label>
+          <input id="resExam" placeholder="e.g. Midterm Term 1 2025" list="examList">
+          <datalist id="examList">${exams.map(e=>`<option>${e}</option>`).join("")}</datalist>
+        </div>
+        <div class="form-group"><label>Marks (0–100)</label><input id="resMarks" type="number" min="0" max="100" placeholder="0"></div>
+      </div>
+      <button class="btn btn-gold" onclick="saveResult()"><i class="fas fa-save"></i> Save Result</button>
+    </div>`:""}
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Results Table</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select id="filterExam" onchange="loadResultTable()" style="width:180px">
+            <option value="">All Exams</option>${exams.map(e=>`<option>${e}</option>`).join("")}
+          </select>
+          <select id="filterClass" onchange="loadResultTable()" style="width:150px">
+            <option value="">All Classes</option>
+            ${(isAdmin?[...new Set(allStudents.map(s=>s.class))].sort():myClasses).map(c=>`<option>${c}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table id="resTable"></table></div>
+    </div>`;
+  window._resStudents=allStudents; window._resResults=results; window._resAssigns=assigns; window._resSubjects=subjects;
+  setTimeout(()=>{ onResClassChange(); loadResultTable(); },20);
+}
+
+async function onResClassChange(){
+  const cls=document.getElementById("resClass")?.value;
+  const isAdmin=(CU.access_level||CU.role)==="admin";
+  const stuSel=document.getElementById("resStudent"); const subjSel=document.getElementById("resSubject");
+  if(!stuSel||!subjSel) return;
+  const stuList=cls?(window._resStudents||[]).filter(s=>s.class===cls):(window._resStudents||[]);
+  stuSel.innerHTML=stuList.length?stuList.map(s=>`<option value="${s.id}">${s.name}</option>`).join(""):`<option value="">No students</option>`;
+  let subjs=window._resSubjects||[];
+  if(cls&&!isAdmin){ const scope=await getMyScope(); if(scope!=="all") subjs=scope.filter(a=>a.class_name===cls).map(a=>a.subject); }
+  subjSel.innerHTML=subjs.length?subjs.map(s=>`<option>${s}</option>`).join(""):`<option value="">No subjects</option>`;
+}
+
+async function saveResult(){
+  const studentId=document.getElementById("resStudent")?.value;
+  const subject=document.getElementById("resSubject")?.value;
+  const exam=document.getElementById("resExam")?.value.trim();
+  const marks=Number(document.getElementById("resMarks")?.value);
+  if(!studentId||!subject||!exam||isNaN(marks)||marks<0||marks>100){ flash("Fill all fields correctly.","danger"); return; }
+  const isAdmin=(CU.access_level||CU.role)==="admin";
+  if(!isAdmin&&!(await canEnterResult(studentId,subject))){ flash("❌ You are not assigned to this class/subject.","danger"); return; }
+  showLoading("Saving result…");
+  try {
+    await dbInsert("results",{student_id:studentId,subject,marks,grade:grade(marks),exam,entered_by:CU.name});
+    clearAllCache();
+    flash("Result saved!"); document.getElementById("resMarks").value="";
+    // Refresh results list
+    window._resResults=await dbGet("results");
+    loadResultTable();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+function loadResultTable(){
+  const isAdmin=(CU.access_level||CU.role)==="admin";
+  const allStudents=window._resStudents||[];
+  const assigns=window._resAssigns||[];
+  const filterExam=document.getElementById("filterExam")?.value||"";
+  const filterClass=document.getElementById("filterClass")?.value||"";
+  let data=window._resResults||[];
+  if(!isAdmin) data=data.filter(r=>{ const stu=allStudents.find(s=>s.id==r.student_id); if(!stu) return false; return assigns.some(a=>a.class_name===stu.class&&a.subject===r.subject); });
+  if(filterExam) data=data.filter(r=>r.exam===filterExam);
+  if(filterClass) data=data.filter(r=>{ const s=allStudents.find(x=>x.id==r.student_id); return s&&s.class===filterClass; });
+  let html=`<tr><th>Student</th><th>Class</th><th>Subject</th><th>Exam</th><th>Marks</th><th>Grade</th><th>Entered By</th></tr>`;
+  data.slice().reverse().forEach(r=>{ const s=allStudents.find(x=>x.id==r.student_id); html+=`<tr><td><strong>${s?s.name:"?"}</strong></td><td>${s?`<span class="class-pill">${s.class}</span>`:"-"}</td><td>${r.subject}</td><td>${r.exam}</td><td>${r.marks}/100</td><td>${gradeBadge(r.grade)}</td><td style="color:var(--text2);font-size:12px">${r.entered_by||"-"}</td></tr>`; });
+  const el=document.getElementById("resTable"); if(el) el.innerHTML=html;
+}
+
+/* ════════════════════════════════════════
+   FEES
+════════════════════════════════════════ */
+async function renderFees(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading fees…");
+  const students=await dbGet("students");
+  const classes=await getAllClasses();
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Fee Management","Record and track student fee payments")}
+    <div class="card">
+      <div class="card-title">💳 Record Payment</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Student</label><select id="feeStud">${students.map(s=>`<option value="${s.id}">${s.name} (${s.adm} — ${s.class})</option>`).join("")}</select></div>
+        <div class="form-group"><label>Amount Paid</label><input id="feeAmt" type="number" placeholder="0"></div>
+        <div class="form-group"><label>Total Fee Due</label><input id="feeDue" type="number" placeholder="0"></div>
+        <div class="form-group"><label>Term</label><input id="feeTerm" placeholder="Term 1 2025"></div>
+        <div class="form-group"><label>Date</label><input id="feeDate" type="date" value="${today()}"></div>
+        <div class="form-group"><label>Payment Method</label><select id="feeMeth"><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option><option>Cheque</option></select></div>
+      </div>
+      <button class="btn btn-teal" onclick="saveFee()"><i class="fas fa-save"></i> Record Payment</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Fee Records</div><select id="feeClsFilter" onchange="loadFeeTable()" style="width:160px"><option value="">All Classes</option>${classes.map(c=>`<option>${c}</option>`).join("")}</select></div>
+      <div class="tbl-wrap"><table id="feeTable"></table></div>
+    </div>`;
+  window._feeStudents=students;
+  loadFeeTable();
+}
+
+async function saveFee(){
+  const amount=Number(document.getElementById("feeAmt").value);
+  if(!amount){ flash("Enter amount paid.","danger"); return; }
+  showLoading("Saving…");
+  try {
+    await dbInsert("fees",{ student_id:document.getElementById("feeStud").value, amount, total_due:Number(document.getElementById("feeDue").value)||null, term:document.getElementById("feeTerm").value, date:document.getElementById("feeDate").value||null, method:document.getElementById("feeMeth").value, recorded_by:CU.name });
+    clearAllCache(); flash("Payment recorded!"); loadFeeTable();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadFeeTable(){
+  const students=window._feeStudents||await dbGet("students");
+  const fees=await dbGet("fees");
+  const cls=document.getElementById("feeClsFilter")?.value||"";
+  let data=cls?fees.filter(f=>{ const s=students.find(x=>x.id==f.student_id); return s&&s.class===cls; }):fees;
+  let html=`<tr><th>Student</th><th>Class</th><th>Term</th><th>Paid</th><th>Due</th><th>Status</th><th>Method</th><th>Date</th><th>By</th></tr>`;
+  data.slice().reverse().forEach(f=>{ const s=students.find(x=>x.id==f.student_id); const pct=f.total_due?f.amount/f.total_due:1; const st=pct>=1?'<span class="badge badge-paid">Paid</span>':pct>0?'<span class="badge badge-partial">Partial</span>':'<span class="badge badge-unpaid">Unpaid</span>'; html+=`<tr><td><strong>${s?s.name:"?"}</strong></td><td>${s?`<span class="class-pill">${s.class}</span>`:"-"}</td><td>${f.term||"-"}</td><td style="color:var(--green)">${fmtMoney(f.amount)}</td><td>${f.total_due?fmtMoney(f.total_due):"-"}</td><td>${st}</td><td>${f.method||"-"}</td><td>${f.date||"-"}</td><td style="color:var(--text2);font-size:12px">${f.recorded_by||"-"}</td></tr>`; });
+  const el=document.getElementById("feeTable"); if(el) el.innerHTML=html;
+}
+
+/* ════════════════════════════════════════
+   EXPENSES
+════════════════════════════════════════ */
+async function renderExpenses(){
+  const mc=document.getElementById("mainContent");
+  mc.innerHTML=`
+    ${ph("Expenses","Record and track school expenditures")}
+    <div class="card">
+      <div class="card-title">➕ Record Expense</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Category</label><select id="expCat">${EXP_CATS.map(c=>`<option>${c}</option>`).join("")}</select></div>
+        <div class="form-group"><label>Description</label><input id="expDesc" placeholder="Brief description"></div>
+        <div class="form-group"><label>Amount (TSh)</label><input id="expAmt" type="number" placeholder="0"></div>
+        <div class="form-group"><label>Paid To</label><input id="expTo" placeholder="Vendor / Person"></div>
+        <div class="form-group"><label>Date</label><input id="expDate" type="date" value="${today()}"></div>
+        <div class="form-group"><label>Method</label><select id="expMeth"><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option><option>Cheque</option></select></div>
+      </div>
+      <button class="btn btn-coral" onclick="saveExpense()"><i class="fas fa-save"></i> Record Expense</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Expense Records</div><select id="expCatFilter" onchange="loadExpTable()" style="width:160px"><option value="">All Categories</option>${EXP_CATS.map(c=>`<option>${c}</option>`).join("")}</select></div>
+      <div class="tbl-wrap"><table id="expTable"></table></div>
+    </div>`;
+  loadExpTable();
+}
+
+async function saveExpense(){
+  const amount=Number(document.getElementById("expAmt").value);
+  const desc=document.getElementById("expDesc").value.trim();
+  if(!amount||!desc){ flash("Description and amount required.","danger"); return; }
+  showLoading("Saving…");
+  try {
+    await dbInsert("expenses",{ category:document.getElementById("expCat").value, description:desc, amount, paid_to:document.getElementById("expTo").value.trim(), date:document.getElementById("expDate").value||null, method:document.getElementById("expMeth").value, recorded_by:CU.name });
+    clearAllCache(); flash("Expense recorded."); loadExpTable();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadExpTable(){
+  const expenses=await dbGet("expenses");
+  const cat=document.getElementById("expCatFilter")?.value||"";
+  let data=cat?expenses.filter(e=>e.category===cat):expenses;
+  const total=data.reduce((a,b)=>a+Number(b.amount),0);
+  let html=`<tr><th>Category</th><th>Description</th><th>Amount</th><th>Paid To</th><th>Method</th><th>Date</th><th>By</th></tr>`;
+  data.slice().reverse().forEach(e=>{ html+=`<tr><td><span class="badge badge-info">${e.category}</span></td><td>${e.description}</td><td style="color:var(--coral)">${fmtMoney(e.amount)}</td><td>${e.paid_to||"-"}</td><td>${e.method||"-"}</td><td>${e.date||"-"}</td><td style="color:var(--text2);font-size:12px">${e.recorded_by||"-"}</td></tr>`; });
+  html+=`<tr style="background:var(--bg3)"><td colspan="2"><strong>Total</strong></td><td><strong style="color:var(--coral)">${fmtMoney(total)}</strong></td><td colspan="4"></td></tr>`;
+  const el=document.getElementById("expTable"); if(el) el.innerHTML=html;
+}
+
+/* ════════════════════════════════════════
+   FINANCE REPORT
+════════════════════════════════════════ */
+async function renderFinReport(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Generating report…");
+  const [fees,expenses]=await Promise.all([dbGet("fees"),dbGet("expenses")]);
+  hideLoading();
+  const totalInc=fees.reduce((a,b)=>a+Number(b.amount),0);
+  const totalExp=expenses.reduce((a,b)=>a+Number(b.amount),0);
+  const net=totalInc-totalExp;
+  const terms=[...new Set(fees.map(f=>f.term).filter(Boolean))];
+  const cats=[...new Set(expenses.map(e=>e.category))];
+  mc.innerHTML=`
+    ${ph("Financial Report","Comprehensive school financial summary")}
+    <div class="stats-grid">
+      <div class="stat-card stat-green"><div class="stat-val">${fmtMoney(totalInc)}</div><div class="stat-label">Total Income</div></div>
+      <div class="stat-card stat-coral"><div class="stat-val">${fmtMoney(totalExp)}</div><div class="stat-label">Total Expenses</div></div>
+      <div class="stat-card ${net>=0?"stat-gold":"stat-coral"}"><div class="stat-val">${fmtMoney(Math.abs(net))}</div><div class="stat-label">${net>=0?"Net Surplus":"Net Deficit"}</div></div>
+      <div class="stat-card stat-blue"><div class="stat-val">${fees.length}</div><div class="stat-label">Transactions</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px">
+      <div class="card">
+        <div class="card-title">📥 Income by Term</div>
+        <table><tr><th>Term</th><th>Amount</th></tr>
+          ${terms.map(t=>`<tr><td>${t}</td><td style="color:var(--green)">${fmtMoney(fees.filter(f=>f.term===t).reduce((a,b)=>a+Number(b.amount),0))}</td></tr>`).join("")||"<tr><td colspan='2' style='color:var(--text3)'>No data</td></tr>"}
+          <tr style="background:var(--bg3)"><td><strong>Total</strong></td><td><strong style="color:var(--green)">${fmtMoney(totalInc)}</strong></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">📤 Expenses by Category</div>
+        <table><tr><th>Category</th><th>Amount</th><th>%</th></tr>
+          ${cats.map(c=>{ const a=expenses.filter(e=>e.category===c).reduce((x,y)=>x+Number(y.amount),0); return`<tr><td>${c}</td><td style="color:var(--coral)">${fmtMoney(a)}</td><td>${totalExp?Math.round(a/totalExp*100):0}%</td></tr>`; }).join("")||"<tr><td colspan='3' style='color:var(--text3)'>No data</td></tr>"}
+          <tr style="background:var(--bg3)"><td><strong>Total</strong></td><td><strong style="color:var(--coral)">${fmtMoney(totalExp)}</strong></td><td></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Summary</div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:4px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Income</span><strong style="color:var(--green)">${fmtMoney(totalInc)}</strong></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">Expenses</span><strong style="color:var(--coral)">${fmtMoney(totalExp)}</strong></div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between"><strong>Net ${net>=0?"Surplus":"Deficit"}</strong><strong style="font-size:20px;color:${net>=0?"var(--green)":"var(--coral)"}">${fmtMoney(Math.abs(net))}</strong></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:right"><button class="btn btn-ghost" onclick="window.print()">🖨 Print Report</button></div>`;
+}
+
+/* ════════════════════════════════════════
+   ATTENDANCE
+════════════════════════════════════════ */
+let attStatus={};
+async function renderAttendance(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading…");
+  const myClasses=await getMyClasses();
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Attendance","Mark and view student attendance records")}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="card">
+        <div class="card-title">✅ Mark Attendance</div>
+        <div class="form-grid" style="margin-bottom:12px">
+          <div class="form-group"><label>Class</label><select id="attClass" onchange="loadAttList()"><option value="">— Select —</option>${myClasses.map(c=>`<option>${c}</option>`).join("")}</select></div>
+          <div class="form-group"><label>Date</label><input id="attDate" type="date" value="${today()}"></div>
+        </div>
+        <div id="attList"></div>
+        <button class="btn btn-teal" onclick="saveAttendance()" style="margin-top:12px">Save Attendance</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Records</div>
+        <div class="form-grid" style="margin-bottom:12px">
+          <div class="form-group"><label>Date</label><input id="attViewDate" type="date" onchange="loadAttView()"></div>
+          <div class="form-group"><label>Class</label><select id="attViewClass" onchange="loadAttView()"><option value="">All</option>${myClasses.map(c=>`<option>${c}</option>`).join("")}</select></div>
+        </div>
+        <div class="tbl-wrap"><table id="attViewTable"></table></div>
+      </div>
+    </div>`;
+  loadAttView();
+}
+
+async function loadAttList(){
+  const cls=document.getElementById("attClass").value; if(!cls) return;
+  const students=(await dbGet("students")).filter(s=>s.class===cls);
+  attStatus={}; students.forEach(s=>attStatus[s.id]="P");
+  let html=`<table><tr><th>Student</th><th>Mark</th></tr>`;
+  students.forEach(s=>{ html+=`<tr><td>${s.name}</td><td><div style="display:flex;gap:5px">${["P","A","L"].map(st=>`<button class="att-btn${st==="P"?" sel-P":""}" id="ab-${s.id}-${st}" onclick="setAtt('${s.id}','${st}')">${st==="P"?"Present":st==="A"?"Absent":"Late"}</button>`).join("")}</div></td></tr>`; });
+  document.getElementById("attList").innerHTML=html+"</table>";
+}
+
+function setAtt(id,status){ attStatus[id]=status; ["P","A","L"].forEach(st=>{ const b=document.getElementById(`ab-${id}-${st}`); if(b) b.className=`att-btn${status===st?" sel-"+st:""}` }); }
+
+async function saveAttendance(){
+  const cls=document.getElementById("attClass").value;
+  const date=document.getElementById("attDate").value;
+  if(!cls||!date){ flash("Select class and date.","danger"); return; }
+  showLoading("Saving attendance…");
+  try {
+    const students=(await dbGet("students")).filter(s=>s.class===cls);
+    // Delete existing records for this class+date then re-insert
+    const { error:delErr } = await sb.from("attendance").delete().eq("date",date).eq("class",cls);
+    if(delErr) throw delErr;
+    const rows=students.map(s=>({student_id:s.id,date,status:attStatus[s.id]||"P",class:cls}));
+    if(rows.length){ const { error } = await sb.from("attendance").insert(rows); if(error) throw error; }
+    clearAllCache(); flash(`Attendance saved for ${cls} on ${date}.`); loadAttView();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadAttView(){
+  const date=document.getElementById("attViewDate")?.value||"";
+  const cls=document.getElementById("attViewClass")?.value||"";
+  let q=sb.from("attendance").select("*").order("created_at",{ascending:false}).limit(80);
+  if(date) q=q.eq("date",date);
+  if(cls) q=q.eq("class",cls);
+  const { data:att } = await q;
+  const students=await dbGet("students");
+  let html=`<tr><th>Student</th><th>Class</th><th>Date</th><th>Status</th></tr>`;
+  (att||[]).forEach(a=>{ const s=students.find(x=>x.id==a.student_id); const b=a.status==="P"?'<span class="badge badge-present">Present</span>':a.status==="A"?'<span class="badge badge-absent">Absent</span>':'<span class="badge badge-late">Late</span>'; html+=`<tr><td>${s?.name||"?"}</td><td>${s?.class||"-"}</td><td>${a.date}</td><td>${b}</td></tr>`; });
+  const el=document.getElementById("attViewTable"); if(el) el.innerHTML=html;
+}
+
+/* ════════════════════════════════════════
+   SUBJECTS
+════════════════════════════════════════ */
+async function renderSubjects(){
+  const mc=document.getElementById("mainContent");
+  mc.innerHTML=`
+    ${ph("Subjects","Register and manage school subjects")}
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:18px">
+      <div class="card">
+        <div class="card-title">➕ Add Subject</div>
+        <div class="form-group" style="margin-bottom:12px"><label>Subject Name</label><input id="newSubj" placeholder="e.g. Computer Science"></div>
+        <button class="btn btn-gold" onclick="addSubject()">Add Subject</button>
+      </div>
+      <div class="card"><div class="card-title">All Subjects</div><div id="subjList">Loading…</div></div>
+    </div>`;
+  loadSubjList();
+}
+
+async function addSubject(){
+  const name=document.getElementById("newSubj").value.trim();
+  if(!name){ flash("Enter subject name.","danger"); return; }
+  showLoading("Adding…");
+  try { await dbInsert("subjects",{name}); clearAllCache(); document.getElementById("newSubj").value=""; loadSubjList(); flash("Subject added."); }
+  catch(e){ flash("Already exists or error.","danger"); }
+  finally { hideLoading(); }
+}
+
+async function loadSubjList(){
+  const subjects=await dbGet("subjects");
+  const html=subjects.map(s=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg3);border-radius:10px;margin-bottom:6px">
+      <span style="font-weight:600">${s.name}</span>
+      <button class="btn btn-coral btn-xs" onclick="removeSubject('${s.id}')">Remove</button>
+    </div>`).join("");
+  const el=document.getElementById("subjList");
+  if(el) el.innerHTML=html||`<div style="color:var(--text3)">No subjects yet.</div>`;
+}
+
+async function removeSubject(id){
+  if(!confirm("Remove this subject?")) return;
+  await dbDelete("subjects",id); clearAllCache(); loadSubjList();
+}
+
+/* ════════════════════════════════════════
+   TIMETABLE
+════════════════════════════════════════ */
+async function renderTimetable(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading…");
+  const classes=await getMyClasses();
+  const subjects=(await dbGet("subjects")).map(s=>s.name);
+  const staff=(await dbGet("staff")).filter(s=>s.access_level==="academic"||s.username==="admin");
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Timetable","Weekly class schedule")}
+    <div class="card" style="margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div class="form-group" style="margin-bottom:0"><label>Select Class</label><select id="ttClass" onchange="renderTT()" style="width:180px"><option value="">— Select Class —</option>${classes.map(c=>`<option>${c}</option>`).join("")}</select></div>
+        <div style="color:var(--text2);font-size:12px;margin-top:14px">Click any cell to assign a lesson</div>
+      </div>
+    </div>
+    <div id="ttContainer"></div>
+    <div id="ttModal" class="hidden modal-overlay">
+      <div class="modal-box" style="width:340px">
+        <div class="modal-title">📝 Assign Lesson</div>
+        <div class="form-group" style="margin-bottom:10px"><label>Subject</label><select id="ttSubj">${subjects.map(s=>`<option>${s}</option>`).join("")}</select></div>
+        <div class="form-group" style="margin-bottom:14px"><label>Teacher</label><select id="ttTeacher">${staff.map(s=>`<option>${s.name}</option>`).join("")}</select></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-gold" onclick="saveTTCell()">Assign</button>
+          <button class="btn btn-coral btn-sm" onclick="clearTTCell()">Clear</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('ttModal').classList.add('hidden')">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+let ttEditKey=""; let _ttData=[];
+async function renderTT(){
+  const cls=document.getElementById("ttClass").value;
+  if(!cls){ document.getElementById("ttContainer").innerHTML=""; return; }
+  showLoading("Loading timetable…");
+  const { data } = await sb.from("timetable").select("*").eq("class_name",cls);
+  _ttData=data||[];
+  hideLoading();
+  let html=`<div class="card"><div class="tt-grid"><div class="tt-head">Time</div>`;
+  DAYS.forEach(d=>html+=`<div class="tt-head">${d}</div>`);
+  PERIODS.forEach(p=>{
+    html+=`<div class="tt-time">${p}</div>`;
+    DAYS.forEach(d=>{ const key=`${cls}||${d}||${p}`; const entry=_ttData.find(x=>x.key===key); html+=entry?`<div class="tt-cell filled" onclick="openTTModal('${key}')"><div class="subj">${entry.subject}</div><div class="teach">${entry.teacher}</div></div>`:`<div class="tt-cell" onclick="openTTModal('${key}')"><div style="color:var(--text3);font-size:11px">+ Add</div></div>`; });
+  });
+  document.getElementById("ttContainer").innerHTML=html+"</div></div>";
+}
+
+function openTTModal(key){
+  ttEditKey=key;
+  const e=_ttData.find(x=>x.key===key);
+  if(e){ document.getElementById("ttSubj").value=e.subject; document.getElementById("ttTeacher").value=e.teacher; }
+  document.getElementById("ttModal").classList.remove("hidden");
+}
+
+async function saveTTCell(){
+  const [cls,day,period]=ttEditKey.split("||");
+  showLoading("Saving…");
+  try {
+    await sb.from("timetable").delete().eq("key",ttEditKey);
+    await dbInsert("timetable",{key:ttEditKey,class_name:cls,day,period,subject:document.getElementById("ttSubj").value,teacher:document.getElementById("ttTeacher").value});
+    document.getElementById("ttModal").classList.add("hidden"); renderTT();
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function clearTTCell(){
+  showLoading("Clearing…");
+  try { await sb.from("timetable").delete().eq("key",ttEditKey); document.getElementById("ttModal").classList.add("hidden"); renderTT(); }
+  catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+/* ════════════════════════════════════════
+   ANNOUNCEMENTS
+════════════════════════════════════════ */
+async function renderAnnouncements(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading…");
+  const classes=await getAllClasses();
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Announcements","Compose and broadcast school-wide notices")}
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px">
+      <div>
+        <div class="card">
+          <div class="card-title">📢 Compose New Announcement</div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column:1/-1"><label>Title *</label><input id="annTitle" placeholder="e.g. School Opening Day"></div>
+            <div class="form-group" style="grid-column:1/-1"><label>Message *</label><textarea id="annMsg" rows="4" placeholder="Write the full announcement here…"></textarea></div>
+            <div class="form-group"><label>Send To</label><select id="annRecip" onchange="updatePhonePreview()"><option value="all">📣 Everyone (Teachers + Parents)</option><option value="teachers">👩‍🏫 Teachers Only</option><option value="parents">👨‍👩‍👧 Parents Only</option>${classes.map(c=>`<option value="class:${c}">🏫 Class: ${c}</option>`).join("")}</select></div>
+            <div class="form-group"><label>Priority Level</label><select id="annPriority"><option value="high">🔴 High — Urgent</option><option value="normal" selected>🟢 Normal</option><option value="low">🟡 Low — Informational</option></select></div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">📱 Phone Numbers for WhatsApp / SMS</div>
+            <div id="phonePreview" class="phone-list-box">Select recipient to see numbers…</div>
+            <button class="btn btn-blue btn-sm" onclick="copyPhones()" style="margin-top:10px"><i class="fas fa-copy"></i> Copy Numbers</button>
+            <span id="copyFeedback" style="font-size:11px;color:var(--green);margin-left:8px"></span>
+          </div>
+          <button class="btn btn-gold" onclick="sendAnnouncement()"><i class="fas fa-paper-plane"></i> Send Announcement</button>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 All Announcements</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-xs" onclick="filterAnns('all')">All</button>
+              <button class="btn btn-ghost btn-xs" onclick="filterAnns('teachers')">Teachers</button>
+              <button class="btn btn-ghost btn-xs" onclick="filterAnns('parents')">Parents</button>
+            </div>
+          </div>
+          <div id="annList" style="max-height:70vh;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>`;
+  updatePhonePreview(); renderAnnList("all");
+}
+
+async function getPhonesForRecipient(recip){
+  const staff=await dbGet("staff"), students=await dbGet("students");
+  const teacherPhones=staff.filter(s=>s.access_level==="academic"&&s.phone).map(s=>({name:s.name,phone:s.phone}));
+  const parentPhones=students.filter(s=>s.parent_phone).map(s=>({name:s.parent||"Parent",phone:s.parent_phone}));
+  if(recip==="teachers") return teacherPhones;
+  if(recip==="parents") return parentPhones;
+  if(recip&&recip.startsWith("class:")){ const cls=recip.replace("class:",""); return students.filter(s=>s.class===cls&&s.parent_phone).map(s=>({name:s.parent||"Parent",phone:s.parent_phone})); }
+  return [...teacherPhones,...parentPhones];
+}
+
+async function updatePhonePreview(){
+  const recip=document.getElementById("annRecip")?.value||"all";
+  const list=await getPhonesForRecipient(recip);
+  const el=document.getElementById("phonePreview"); if(!el) return;
+  if(!list.length){ el.textContent="No phone numbers found for this group."; return; }
+  el.innerHTML=list.map(p=>`<span title="${p.name}">${p.phone}</span>`).join(", ");
+  el.setAttribute("data-numbers",list.map(p=>p.phone).join(", "));
+}
+
+function copyPhones(){
+  const el=document.getElementById("phonePreview"); const numbers=el?.getAttribute("data-numbers")||"";
+  if(!numbers){ flash("No numbers to copy.","danger"); return; }
+  navigator.clipboard.writeText(numbers).then(()=>{ const fb=document.getElementById("copyFeedback"); if(fb){ fb.textContent="✓ Copied!"; setTimeout(()=>fb.textContent="",2500); } }).catch(()=>flash("Failed to copy.","danger"));
+}
+
+async function sendAnnouncement(){
+  const title=document.getElementById("annTitle")?.value.trim();
+  const msg=document.getElementById("annMsg")?.value.trim();
+  const recip=document.getElementById("annRecip")?.value||"all";
+  const priority=document.getElementById("annPriority")?.value||"normal";
+  if(!title||!msg){ flash("Title and message are required.","danger"); return; }
+  showLoading("Sending…");
+  try {
+    const phoneObjs=await getPhonesForRecipient(recip);
+    const ann=await dbInsert("announcements",{ title, message:msg, sent_to:recip, priority, sender:CU.name, sender_role:CU.role_title||"Admin", phone_numbers:phoneObjs.map(p=>p.phone), read_by:[] });
+    await deliverToInbox(ann);
+    clearAllCache();
+    flash(`📢 Sent! ${phoneObjs.length} phone number${phoneObjs.length!==1?"s":""} ready.`);
+    document.getElementById("annTitle").value=""; document.getElementById("annMsg").value="";
+    renderAnnList("all");
+  } catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+async function deliverToInbox(ann){
+  const staff=await dbGet("staff"), students=await dbGet("students");
+  const recip=ann.sent_to;
+  const rows=[];
+  const makeMsg=(recipient_id,recipient_type)=>({ ann_id:ann.id, recipient_id, recipient_type, title:ann.title, message:ann.message, priority:ann.priority, sender:ann.sender, sender_role:ann.sender_role, read:false });
+  if(recip==="all"||recip==="teachers") staff.filter(s=>s.access_level==="academic"||s.access_level==="bursar").forEach(s=>rows.push(makeMsg(s.id,"staff")));
+  if(recip==="all"||recip==="parents") students.forEach(s=>rows.push(makeMsg(s.id,"student")));
+  if(recip&&recip.startsWith("class:")){ const cls=recip.replace("class:",""); students.filter(s=>s.class===cls).forEach(s=>rows.push(makeMsg(s.id,"student"))); }
+  if(rows.length){ await sb.from("inbox").insert(rows); }
+}
+
+let annFilter="all";
+function filterAnns(f){ annFilter=f; renderAnnList(f); }
+async function renderAnnList(f){
+  let anns=(await dbGet("announcements")).slice().reverse();
+  if(f==="teachers") anns=anns.filter(a=>a.sent_to==="teachers"||a.sent_to==="all");
+  else if(f==="parents") anns=anns.filter(a=>a.sent_to==="parents"||a.sent_to==="all");
+  const el=document.getElementById("annList"); if(!el) return;
+  if(!anns.length){ el.innerHTML=`<div style="color:var(--text3);padding:12px">No announcements yet.</div>`; return; }
+  const cls_map={all:"all",teachers:"teachers",parents:"parents"};
+  el.innerHTML=anns.map(a=>{
+    const recipLabel=a.sent_to==="all"?"📣 Everyone":a.sent_to==="teachers"?"👩‍🏫 Teachers":a.sent_to==="parents"?"👨‍👩‍👧 Parents":a.sent_to.startsWith("class:")?"🏫 "+a.sent_to.replace("class:",""):a.sent_to;
+    const cls=a.sent_to==="teachers"?"teachers":a.sent_to==="parents"?"parents":"all";
+    return`<div class="ann-card ${cls}">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+        <span class="ann-priority priority-${a.priority||'normal'}">${a.priority||"normal"}</span>
+        <span class="recip-badge recip-${cls}" style="font-size:10px">${recipLabel}</span>
+        ${a.phone_numbers?.length?`<span style="font-size:10px;color:var(--text3)">📱 ${a.phone_numbers.length} contacts</span>`:""}
+      </div>
+      <div class="ann-title">${a.title}</div>
+      <div class="ann-body">${a.message}</div>
+      <div class="ann-meta">
+        <span>📅 ${new Date(a.created_at).toLocaleString()}</span>
+        <span>✍️ ${a.sender}</span>
+        ${a.phone_numbers?.length?`<button class="btn btn-blue btn-xs" onclick="copyAnnPhones('${a.id}')">📋 Copy Phones</button>`:""}
+        <button class="btn btn-coral btn-xs" onclick="deleteAnn('${a.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function copyAnnPhones(annId){
+  const rows=await dbGet("announcements",{id:annId}); const ann=rows[0];
+  if(!ann||!ann.phone_numbers?.length){ flash("No numbers.","danger"); return; }
+  navigator.clipboard.writeText(ann.phone_numbers.join(", ")).then(()=>flash(`✓ ${ann.phone_numbers.length} numbers copied!`)).catch(()=>flash("Failed to copy.","danger"));
+}
+
+async function deleteAnn(id){
+  if(!confirm("Delete this announcement?")) return;
+  showLoading("Deleting…");
+  try { await dbDelete("announcements",id); clearAllCache(); renderAnnList(annFilter); flash("Deleted."); }
+  catch(e){ flash("Error: "+e.message,"danger"); }
+  finally { hideLoading(); }
+}
+
+/* ════════════════════════════════════════
+   INBOX / MY MESSAGES
+════════════════════════════════════════ */
+async function getUnreadCount(){
+  const al=CU.access_level||CU.role;
+  let q=sb.from("inbox").select("id",{count:"exact"}).eq("read",false);
+  if(al==="academic"||al==="bursar") q=q.eq("recipient_id",CU.id).eq("recipient_type","staff");
+  else if(al==="student") q=q.eq("recipient_id",CU.data.id).eq("recipient_type","student");
+  else return 0;
+  const { count } = await q;
+  return count||0;
+}
+
+async function renderMyMessages(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading inbox…");
+  const al=CU.access_level||CU.role;
+  let msgs=[];
+  if(al==="admin"){
+    msgs=(await dbGet("announcements")).map(a=>({...a,read:true,recipient_type:"staff"}));
+  } else if(al==="academic"||al==="bursar"){
+    msgs=await dbGet("inbox",{recipient_id:CU.id,recipient_type:"staff"});
+  } else if(al==="student"){
+    msgs=await dbGet("inbox",{recipient_id:CU.data.id,recipient_type:"student"});
+  }
+  msgs=msgs.slice().reverse();
+  const unread=msgs.filter(m=>!m.read).length;
+  hideLoading();
+  mc.innerHTML=`
+    ${ph("Inbox","Your announcements and messages")}
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px"><div class="card-title" style="margin-bottom:0">📬 Messages</div>${unread>0?`<span class="badge badge-admin">${unread} unread</span>`:""}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${unread>0?`<button class="btn btn-ghost btn-sm" onclick="markAllRead()">✓ Mark All Read</button>`:""}
+          <select id="msgFilter" onchange="filterMsgs()" style="width:150px"><option value="all">All Messages</option><option value="unread">Unread Only</option><option value="high">High Priority</option></select>
+        </div>
+      </div>
+      <div id="msgList"></div>
+    </div>`;
+  window._allMsgs=msgs;
+  renderMsgList(msgs);
+}
+
+function renderMsgList(msgs){
+  const el=document.getElementById("msgList"); if(!el) return;
+  if(!msgs.length){ el.innerHTML=`<div style="color:var(--text3);padding:16px;text-align:center">📭 No messages yet.</div>`; return; }
+  el.innerHTML=msgs.map((m,i)=>`
+    <div class="msg-card ${!m.read?"unread":""}" onclick="openMsg('${m.id}',${i})">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        ${!m.read?`<div class="unread-dot"></div>`:""}
+        <span class="ann-priority priority-${m.priority||'normal'}">${m.priority||"normal"}</span>
+        <span style="font-size:11px;color:var(--text3)">from ${m.sender||"System"} · ${m.sender_role||""}</span>
+      </div>
+      <div class="msg-title">${m.title}</div>
+      <div class="msg-preview">${m.message.substring(0,100)}${m.message.length>100?"…":""}</div>
+      <div class="msg-meta">
+        <span style="font-size:11px;color:var(--text3)">📅 ${new Date(m.created_at).toLocaleString()}</span>
+        ${!m.read?`<span style="font-size:11px;color:var(--gold);font-weight:700">● Unread</span>`:`<span style="font-size:11px;color:var(--text3)">✓ Read</span>`}
+      </div>
+    </div>`).join("");
+}
+
+async function openMsg(id,idx){
+  const al=CU.access_level||CU.role;
+  if(al!=="admin"){
+    await sb.from("inbox").update({read:true}).eq("id",id);
+    if(window._allMsgs&&window._allMsgs[idx]) window._allMsgs[idx].read=true;
+    renderMsgList(window._allMsgs);
+  }
+  const msg=window._allMsgs[idx];
+  const modal=document.createElement("div"); modal.className="modal-overlay";
+  modal.innerHTML=`<div class="modal-box">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <span class="ann-priority priority-${msg.priority||'normal'}">${msg.priority||"normal"} priority</span>
+      <span style="font-size:12px;color:var(--text2)">from <strong>${msg.sender||"System"}</strong>${msg.sender_role?" · "+msg.sender_role:""}</span>
+    </div>
+    <div class="modal-title">${msg.title}</div>
+    <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;line-height:1.7;color:var(--text2)">${msg.message}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:16px">📅 Sent: ${new Date(msg.created_at).toLocaleString()}</div>
+    <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Close</button>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+function filterMsgs(){
+  const f=document.getElementById("msgFilter")?.value||"all";
+  let msgs=window._allMsgs||[];
+  if(f==="unread") msgs=msgs.filter(m=>!m.read);
+  else if(f==="high") msgs=msgs.filter(m=>m.priority==="high");
+  renderMsgList(msgs);
+}
+
+async function markAllRead(){
+  const al=CU.access_level||CU.role;
+  let q=sb.from("inbox").update({read:true}).eq("read",false);
+  if(al==="academic"||al==="bursar") q=q.eq("recipient_id",CU.id).eq("recipient_type","staff");
+  else if(al==="student") q=q.eq("recipient_id",CU.data.id).eq("recipient_type","student");
+  await q;
+  flash("All messages marked as read."); renderMyMessages();
+}
+
+/* ════════════════════════════════════════
+   STUDENT PANEL
+════════════════════════════════════════ */
+async function renderStudentResults(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading results…");
+  const me=CU.data;
+  const results=await dbGet("results",{student_id:me.id});
+  hideLoading();
+  const exams=[...new Set(results.map(r=>r.exam))];
+  mc.innerHTML=`
+    ${ph("My Results","Your academic performance records")}
+    <div class="card">
+      <div class="card-header"><div class="card-title">Results</div><select id="sExamFilter" onchange="filterSRes()" style="width:200px"><option value="">All Exams</option>${exams.map(e=>`<option>${e}</option>`).join("")}</select></div>
+      <div class="tbl-wrap"><table id="sResTable"></table></div>
+      <div id="sRankInfo" style="margin-top:16px"></div>
+    </div>`;
+  window._sResults=results;
+  filterSRes();
+}
+
+async function filterSRes(){
+  const me=CU.data; const exam=document.getElementById("sExamFilter")?.value||"";
+  const results=(window._sResults||[]).filter(r=>!exam||r.exam===exam);
+  let html=`<tr><th>Subject</th><th>Exam</th><th>Marks</th><th>Grade</th><th>Remarks</th></tr>`;
+  results.forEach(r=>{ const rem=r.marks>=75?"Excellent":r.marks>=60?"Good":r.marks>=50?"Satisfactory":r.marks>=40?"Fair":"Needs Improvement"; html+=`<tr><td>${r.subject}</td><td>${r.exam}</td><td><strong>${r.marks}/100</strong></td><td>${gradeBadge(r.grade)}</td><td style="color:var(--text2)">${rem}</td></tr>`; });
+  const el=document.getElementById("sResTable"); if(el) el.innerHTML=html;
+  if(exam){
+    const rank=await computeRank(me,exam);
+    const total=results.reduce((a,b)=>a+b.marks,0);
+    const avg=results.length?(total/results.length).toFixed(1):0;
+    const ri=document.getElementById("sRankInfo");
+    if(ri) ri.innerHTML=`<div class="stats-grid" style="max-width:460px"><div class="stat-card stat-blue"><div class="stat-val">${rank.pos}</div><div class="stat-label">Class Position</div></div><div class="stat-card stat-gold"><div class="stat-val">${total}</div><div class="stat-label">Total Marks</div></div><div class="stat-card stat-green"><div class="stat-val">${avg}%</div><div class="stat-label">Average</div></div></div>`;
+  } else { const ri=document.getElementById("sRankInfo"); if(ri) ri.innerHTML=""; }
+}
+
+async function computeRank(me,exam){
+  const { data:classStudents } = await sb.from("students").select("id").eq("class",me.class);
+  const ids=classStudents.map(s=>s.id);
+  const { data:allRes } = await sb.from("results").select("student_id,marks").eq("exam",exam).in("student_id",ids);
+  const totals={};
+  ids.forEach(id=>{ totals[id]=(allRes||[]).filter(r=>r.student_id===id).reduce((a,b)=>a+b.marks,0); });
+  const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  return {pos:sorted.findIndex(x=>x[0]==me.id)+1||"-"};
+}
+
+async function renderStudentReport(){
+  const mc=document.getElementById("mainContent");
+  const me=CU.data;
+  showLoading("Loading…");
+  const results=await dbGet("results",{student_id:me.id});
+  hideLoading();
+  const exams=[...new Set(results.map(r=>r.exam))];
+  mc.innerHTML=`
+    ${ph("Report Card","Official academic performance report")}
+    <div class="card">
+      <div class="form-group" style="max-width:260px;margin-bottom:18px"><label>Select Exam</label><select id="repExam" onchange="loadRepCard()"><option value="">— Select Exam —</option>${exams.map(e=>`<option>${e}</option>`).join("")}</select></div>
+      <div id="repContent"></div>
+    </div>`;
+  window._repResults=results;
+}
+
+async function loadRepCard(){
+  const exam=document.getElementById("repExam").value; if(!exam){ document.getElementById("repContent").innerHTML=""; return; }
+  const me=CU.data;
+  const results=(window._repResults||[]).filter(r=>r.exam===exam);
+  const rank=await computeRank(me,exam);
+  const total=results.reduce((a,b)=>a+b.marks,0);
+  const avg=results.length?(total/results.length).toFixed(1):0;
+  const overall=grade(Number(avg));
+  document.getElementById("repContent").innerHTML=`
+    <div class="report-box">
+      <div style="text-align:center;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:18px">
+        <div style="font-size:20px;font-weight:800;color:var(--gold)">MURSAGAMBA SECONDARY SCHOOL</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px">OFFICIAL STUDENT REPORT CARD</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;margin-bottom:18px">
+        <div><span style="color:var(--text2)">Name: </span><strong>${me.name}</strong></div>
+        <div><span style="color:var(--text2)">Adm No.: </span><strong>${me.adm}</strong></div>
+        <div><span style="color:var(--text2)">Class: </span><strong>${me.class}</strong></div>
+        <div><span style="color:var(--text2)">Exam: </span><strong>${exam}</strong></div>
+        <div><span style="color:var(--text2)">Total: </span><strong>${total}</strong></div>
+        <div><span style="color:var(--text2)">Average: </span><strong>${avg}%</strong></div>
+        <div><span style="color:var(--text2)">Position: </span><strong>${rank.pos}</strong></div>
+        <div><span style="color:var(--text2)">Grade: </span>${gradeBadge(overall)}</div>
+      </div>
+      <table><tr><th>#</th><th>Subject</th><th>Marks</th><th>Grade</th><th>Remarks</th></tr>
+        ${results.map((r,i)=>`<tr><td>${i+1}</td><td>${r.subject}</td><td>${r.marks}/100</td><td>${gradeBadge(r.grade)}</td><td>${r.marks>=75?"Excellent":r.marks>=60?"Good":r.marks>=50?"Satisfactory":r.marks>=40?"Fair":"Needs Improvement"}</td></tr>`).join("")}
+      </table>
+      <div style="margin-top:20px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:var(--text3)">Generated: ${new Date().toLocaleDateString()}</div>
+        <button class="btn btn-ghost" onclick="window.print()">🖨 Print Report Card</button>
+      </div>
+    </div>`;
+}
+
+async function renderStudentFees(){
+  const mc=document.getElementById("mainContent");
+  showLoading("Loading fees…");
+  const me=CU.data;
+  const fees=await dbGet("fees",{student_id:me.id});
+  hideLoading();
+  const paid=fees.reduce((a,b)=>a+Number(b.amount),0);
+  const due=fees.reduce((a,b)=>a+Number(b.total_due||0),0);
+  const balance=due-paid;
+  mc.innerHTML=`
+    ${ph("My Fees","Your fee payment records")}
+    <div class="stats-grid" style="max-width:500px">
+      <div class="stat-card stat-green"><div class="stat-val">${fmtMoney(paid)}</div><div class="stat-label">Total Paid</div></div>
+      <div class="stat-card ${balance>0?"stat-coral":"stat-green"}"><div class="stat-val">${fmtMoney(Math.abs(balance))}</div><div class="stat-label">${balance>0?"Balance Due":"All Cleared"}</div></div>
+    </div>
+    <div class="card"><div class="card-title">Payment History</div>
+      <table><tr><th>Term</th><th>Paid</th><th>Due</th><th>Method</th><th>Date</th><th>Status</th></tr>
+        ${fees.map(f=>{ const pct=f.total_due?f.amount/f.total_due:1; const s=pct>=1?'<span class="badge badge-paid">Paid</span>':pct>0?'<span class="badge badge-partial">Partial</span>':'<span class="badge badge-unpaid">Unpaid</span>'; return`<tr><td>${f.term||"-"}</td><td style="color:var(--green)">${fmtMoney(f.amount)}</td><td>${f.total_due?fmtMoney(f.total_due):"-"}</td><td>${f.method||"-"}</td><td>${f.date||"-"}</td><td>${s}</td></tr>`; }).join("")||"<tr><td colspan='6' style='color:var(--text3)'>No records found</td></tr>"}
+      </table>
+    </div>`;
+}
+
+/* ════════════════════════════════════════
+   BOOT — check DB connectivity then show login
+════════════════════════════════════════ */
+async function boot(){
+  try {
+    // Quick connectivity check
+    await sb.from("staff").select("id").limit(1);
+    hideLoading();
+    document.getElementById("loginPage").classList.remove("hidden");
+  } catch(e){
+    document.querySelector("#loadingOverlay .loading-text").textContent="⚠ Cannot connect to database. Check your network.";
+  }
+}
+
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!document.getElementById("loginPage").classList.contains("hidden")) login(); });
+boot();
+</script>
+</body>
+</html>
