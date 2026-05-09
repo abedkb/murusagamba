@@ -2335,7 +2335,7 @@ const SUPABASE_URL      = 'https://rdnozraqruiyqlkyhcsc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkbm96cmFxcnVpeXFsa3loY3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxODE3NTgsImV4cCI6MjA4OTc1Nzc1OH0.KL8x2QNkTGwdwpMdtKabTqvMr7TKu8vzKMP2DMRwzeI';
 //                         ↑ long string from Project Settings → API → anon/public
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ─────────────────────────────────────────────────────────────
 //  EXAMPLE: how to insert an observation into Supabase
@@ -2343,7 +2343,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ─────────────────────────────────────────────────────────────
 // async function pushObsToSupabase(rec) {
 //   if (typeof supabase === 'undefined') return;
-//   const { error } = await supabase.from('observations').insert({
+//   const { error } = await supabaseClient.from('observations').insert({
 //     ref_key:          rec.key,
 //     station_name:     state.stationName,
 //     observer_name:    state.observerName,
@@ -5780,11 +5780,11 @@ function initReturnWASMSButtons() {
 //  SUPABASE SYNC HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-function _sbReady() { return typeof supabase !== 'undefined'; }
+function _sbReady() { return typeof supabaseClient !== 'undefined'; }
 
 async function pushObsToSupabase(rec) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from('observations').upsert({
+  const { error } = await supabaseClient.from('observations').upsert({
     ref_key:           rec.key,
     obs_date:          rec.date.split('/').reverse().join('-'),
     obs_day:           rec.day,
@@ -5830,7 +5830,7 @@ async function pushObsToSupabase(rec) {
 
 async function updateObsStatusInSupabase(key, status) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from('observations')
+  const { error } = await supabaseClient.from('observations')
     .update({ status })
     .eq('ref_key', key);
   if (error) console.error('Supabase status update error:', error.message);
@@ -5839,7 +5839,7 @@ async function updateObsStatusInSupabase(key, status) {
 async function pushPhenoToSupabase(rec) {
   if (!_sbReady()) return;
   const dateIso = rec.date.split('/').reverse().join('-');
-  const { error } = await supabase.from('phenological_observations').upsert({
+  const { error } = await supabaseClient.from('phenological_observations').upsert({
     ref_key:        rec.key,
     obs_date:       dateIso,
     obs_day:        rec.day,
@@ -5885,13 +5885,13 @@ async function pushPhenoToSupabase(rec) {
 
 async function pushUserToSupabase(table, data) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from(table).insert(data);
+  const { error } = await supabaseClient.from(table).insert(data);
   if (error) console.error(`Supabase ${table} insert error:`, error.message);
 }
 
 async function pushPendingToSupabase(item) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from('pending_approvals').insert({
+  const { error } = await supabaseClient.from('pending_approvals').insert({
     type:           item.type,
     name:           item.name,
     title:          item.title || null,
@@ -5909,7 +5909,7 @@ async function pushPendingToSupabase(item) {
 
 async function pushProductToSupabase(prod) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from('products').insert({
+  const { error } = await supabaseClient.from('products').insert({
     title:        prod.title,
     category:     prod.cat,
     access_level: prod.access,
@@ -5922,7 +5922,7 @@ async function pushProductToSupabase(prod) {
 
 async function pushSHRequestToSupabase(req) {
   if (!_sbReady()) return;
-  const { error } = await supabase.from('stakeholder_requests').insert({
+  const { error } = await supabaseClient.from('stakeholder_requests').insert({
     type:             req.type,
     period:           req.period || null,
     purpose:          req.purpose || null,
@@ -5938,13 +5938,13 @@ async function loadFromSupabase() {
   if (!_sbReady()) return;
   try {
     const [obsRes, phenoRes, obsvrRes, shRes, pendRes, prodRes, reqRes] = await Promise.all([
-      supabase.from('observations').select('*'),
-      supabase.from('phenological_observations').select('*'),
-      supabase.from('observers').select('*'),
-      supabase.from('stakeholders').select('*'),
-      supabase.from('pending_approvals').select('*'),
-      supabase.from('products').select('*'),
-      supabase.from('stakeholder_requests').select('*'),
+      supabaseClient.from('observations').select('*'),
+      supabaseClient.from('phenological_observations').select('*'),
+      supabaseClient.from('observers').select('*'),
+      supabaseClient.from('stakeholders').select('*'),
+      supabaseClient.from('pending_approvals').select('*'),
+      supabaseClient.from('products').select('*'),
+      supabaseClient.from('stakeholder_requests').select('*'),
     ]);
 
     if (obsRes.data) {
