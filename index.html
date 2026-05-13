@@ -1271,27 +1271,7 @@ body{
                     <td class="col-0600"><input type="number" id="ane_present" step="0.01" oninput="calcWindRun()"/></td>
                     <td class="col-0600"><input type="number" id="ane_prev" step="0.01" oninput="calcWindRun()"/></td>
                     <td class="col-0600"><input type="number" id="ane_diff" class="auto-calc" readonly step="0.01"/></td>
-                    <td><select id="ane_dir" style="min-width:90px;padding:2px 4px">
-                      <option value="">-- Dir --</option>
-                      <option value="0">Calm (000°)</option>
-                      <option value="360">N — 360°</option>
-                      <option value="22.5">NNE — 022°</option>
-                      <option value="45">NE — 045°</option>
-                      <option value="67.5">ENE — 067°</option>
-                      <option value="90">E — 090°</option>
-                      <option value="112.5">ESE — 112°</option>
-                      <option value="135">SE — 135°</option>
-                      <option value="157.5">SSE — 157°</option>
-                      <option value="180">S — 180°</option>
-                      <option value="202.5">SSW — 202°</option>
-                      <option value="225">SW — 225°</option>
-                      <option value="247.5">WSW — 247°</option>
-                      <option value="270">W — 270°</option>
-                      <option value="292.5">WNW — 292°</option>
-                      <option value="315">NW — 315°</option>
-                      <option value="337.5">NNW — 337°</option>
-                      <option value="VRB">Variable (VRB)</option>
-                    </select></td>
+                    <td><input type="text" id="ane_dir" maxlength="3" style="width:64px;text-align:center;font-family:'IBM Plex Mono',monospace" placeholder="000" title="Enter 3-digit direction value (e.g. 110, 350, 000)"/></td>
                     <td><input type="number" id="ane_speed" step="0.1"/></td>
                   </tr></tbody>
                 </table></div>
@@ -1449,7 +1429,7 @@ body{
               </div>
               <div style="background:var(--tma-blue-l);border-radius:var(--radius);padding:.625rem .875rem;margin-top:.75rem;font-size:12px;color:var(--tma-blue);display:flex;align-items:center;gap:8px">
                 <span>⚡</span>
-                <span>On submission, data will <strong>automatically populate all 11 climatological return forms</strong> for the corresponding day and session.</span>
+                <span>On submission, data will <strong>automatically populate all 14 climatological return forms</strong> for the corresponding day and session.</span>
               </div>
             </div>
             <div class="form-actions">
@@ -2001,6 +1981,36 @@ body{
             <button class="ret-download-btn" type="button" onclick="downloadReturn('ret-202')" title="Download as Word (.doc)">⬇ Word</button>
           </div>
           <div class="ret-acc-body" id="body-ret-202"><div id="render-ret-202"></div></div>
+        </div>
+
+        <!-- ACCORDION: Form 10 Wind Speed -->
+        <div class="ret-acc-item">
+          <div class="ret-acc-header" id="hdr-ret-windspeed" data-retid="ret-windspeed">
+            <span class="ret-acc-toggle-zone"><span class="ret-acc-icon">💨</span><span class="ret-acc-label">Form 10 — Wind Speed Register (knots)</span><span class="auto-badge">AUTO</span><span class="ret-acc-arrow" id="arr-ret-windspeed">▾</span></span>
+            <button class="ret-share-btn" type="button" onclick="shareReturnByEmail('ret-windspeed')" title="Share via email">✉ Email</button>
+            <button class="ret-download-btn" type="button" onclick="downloadReturn('ret-windspeed')" title="Download as Word (.doc)">⬇ Word</button>
+          </div>
+          <div class="ret-acc-body" id="body-ret-windspeed"><div id="render-ret-windspeed"></div></div>
+        </div>
+
+        <!-- ACCORDION: Form 10 Wind Direction -->
+        <div class="ret-acc-item">
+          <div class="ret-acc-header" id="hdr-ret-winddir" data-retid="ret-winddir">
+            <span class="ret-acc-toggle-zone"><span class="ret-acc-icon">🧭</span><span class="ret-acc-label">Form 10 — Wind Direction Register</span><span class="auto-badge">AUTO</span><span class="ret-acc-arrow" id="arr-ret-winddir">▾</span></span>
+            <button class="ret-share-btn" type="button" onclick="shareReturnByEmail('ret-winddir')" title="Share via email">✉ Email</button>
+            <button class="ret-download-btn" type="button" onclick="downloadReturn('ret-winddir')" title="Download as Word (.doc)">⬇ Word</button>
+          </div>
+          <div class="ret-acc-body" id="body-ret-winddir"><div id="render-ret-winddir"></div></div>
+        </div>
+
+        <!-- ACCORDION: Form 92 Sunshine Records -->
+        <div class="ret-acc-item">
+          <div class="ret-acc-header" id="hdr-ret-92" data-retid="ret-92">
+            <span class="ret-acc-toggle-zone"><span class="ret-acc-icon">☀️</span><span class="ret-acc-label">Form 92 — Sunshine Records</span><span class="auto-badge">AUTO</span><span class="ret-acc-arrow" id="arr-ret-92">▾</span></span>
+            <button class="ret-share-btn" type="button" onclick="shareReturnByEmail('ret-92')" title="Share via email">✉ Email</button>
+            <button class="ret-download-btn" type="button" onclick="downloadReturn('ret-92')" title="Download as Word (.doc)">⬇ Word</button>
+          </div>
+          <div class="ret-acc-body" id="body-ret-92"><div id="render-ret-92"></div></div>
         </div>
       </div>
 
@@ -2804,6 +2814,9 @@ const FORM_LABELS = {
   'ret-agro3':   'AGRO 3 — Monthly Phenological Report (Perennial Plants)',
   'ret-agro4':   'AGRO 4 — Ten Day Agrometeorological Report',
   'ret-202':     'Form 202 — Monthly Weather Summary',
+  'ret-windspeed':'Form 10 — Wind Speed Register',
+  'ret-winddir': 'Form 10 — Wind Direction Register',
+  'ret-92':      'Form 92 — Sunshine Records',
 };
 
 // Tabular registers → Excel (.xls); narrative reports → Word (.doc)
@@ -2822,6 +2835,9 @@ const FORM_DOWNLOAD_FORMAT = {
   'ret-agro3':   'word',
   'ret-agro4':   'word',
   'ret-202':     'word',
+  'ret-windspeed':'word',
+  'ret-winddir': 'word',
+  'ret-92':      'word',
 };
 
 /* ── SpreadsheetML XML helpers (proper Excel format — no format-mismatch warning) ── */
@@ -3274,7 +3290,7 @@ function selectSession(s) {
 
 // ── FORM 601 AUTO-CALCS ────────────────────────────────────────
 function calcWindRun(){const p=inp('ane_present'),v=inp('ane_prev'),el=document.getElementById('ane_diff');if(el)el.value=(p!==null&&v!==null)?(p-v).toFixed(2):'';}
-function calcSunshineHours(){const m=inp('sun_mins'),el=document.getElementById('sun_hrs');if(el)el.value=(m!==null)?Math.round(m/60):'';};
+function calcSunshineHours(){const m=inp('sun_mins'),el=document.getElementById('sun_hrs');if(el)el.value=(m!==null)?(m/60).toFixed(1):'';};
 /* ════════════════════════════════════════════════════════════════
    PSYCHROMETRIC CALCULATOR
    Based on WMO No.8 Guide to Meteorological Instruments & Methods
@@ -3891,7 +3907,10 @@ function buildReturnById(retId,ym) {
     case 'ret-agro1':   buildAgro1(ym2); break;
     case 'ret-agro3':   buildAgro3(ym2); break;
     case 'ret-agro4':   buildAgro4(ym2); break;
-    case 'ret-202':     buildForm202(ym2); break;
+    case 'ret-202':      buildForm202(ym2); break;
+    case 'ret-windspeed':buildForm10WindSpeed(ym2); break;
+    case 'ret-winddir':  buildForm10WindDir(ym2); break;
+    case 'ret-92':       buildForm92Sunshine(ym2); break;
   }
 }
 
@@ -4339,6 +4358,147 @@ function buildForm10Var(ym, field, dataType, unit, renderId) {
   el.innerHTML=officialFormHtml('Form No. 10',`Recording of Various Weather Parameters: ${dataType} (${unit})`, '',
     [['Station name',state.stationName],['WMO Index No.',state.wmoIndex],['Data type',dataType],['Month / Year',getMonthLabel(ym)]],
     tblHtml,'Effective Date: October 31, 2019','Revision No. 12',sumHtml);
+}
+
+/* ── FORM 10 — Wind Speed Register ──
+   8 synoptic times per day; 0600Z and 1200Z populated from observations */
+function buildForm10WindSpeed(ym) {
+  const el = document.getElementById('render-ret-windspeed'); if (!el) return;
+  const [y, m] = ym.split('-').map(Number);
+  const days = daysInMonth(y, m), recs = monthRecs(ym);
+  const times = ['0000Z','0300Z','0600Z','0900Z','1200Z','1500Z','1800Z','2100Z'];
+  let totals = Array(8).fill(0), counts = Array(8).fill(0);
+  let rows = '';
+  for (let d = 1; d <= days; d++) {
+    const am = getRec(recs, d, '0600'), pm = getRec(recs, d, '1200');
+    const vals = [null, null, am?.windSpeed ?? null, null, pm?.windSpeed ?? null, null, null, null];
+    vals.forEach((v, i) => { if (v !== null) { totals[i] += v; counts[i]++; } });
+    rows += `<tr><td class="day-lbl">${d}</td>` +
+      vals.map(v => v !== null ? fmtCell(v, 0) : slashCell()).join('') +
+      `</tr>`;
+  }
+  const totalRow = `<tr class="total-row"><td>TOTAL</td>` +
+    totals.map((t, i) => counts[i] ? `<td>${t}</td>` : `<td>—</td>`).join('') + `</tr>`;
+  const meanRow = `<tr class="mean-row"><td>MEAN</td>` +
+    totals.map((t, i) => counts[i] ? `<td><strong>${Math.round(t / counts[i])}</strong></td>` : `<td>—</td>`).join('') + `</tr>`;
+  const tblHtml = `<table class="official-tbl">
+    <thead><tr><th>DATE</th>${times.map(t => `<th>${t}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot>${totalRow}${meanRow}</tfoot></table>`;
+  const obsCount = counts[2] + counts[4];
+  const allVals = recs.filter(r => r.windSpeed !== null).map(r => r.windSpeed);
+  const sumHtml = makeSummaryTable([
+    ['Total obs.', `${obsCount}`],
+    ['Mean (0600Z)', counts[2] ? `${Math.round(totals[2]/counts[2])} kts` : '—'],
+    ['Mean (1200Z)', counts[4] ? `${Math.round(totals[4]/counts[4])} kts` : '—'],
+    ['Max recorded', allVals.length ? `${Math.max(...allVals)} kts` : '—'],
+  ]);
+  el.innerHTML = officialFormHtml('Form No. 10', 'Recording of Various Weather Parameters', '',
+    [['Station name', state.stationName], ['WMO Index No.', state.wmoIndex], ['Data type', 'WIND SPEED'], ['Month / Year', getMonthLabel(ym)]],
+    tblHtml, 'Effective Date: October 01, 2023', 'Revision No. 13', sumHtml);
+}
+
+/* ── FORM 10 — Wind Direction Register ──
+   Values recorded as plain 3-digit numerics (e.g. 110, 350, 000) — no degree symbol */
+function buildForm10WindDir(ym) {
+  const el = document.getElementById('render-ret-winddir'); if (!el) return;
+  const [y, m] = ym.split('-').map(Number);
+  const days = daysInMonth(y, m), recs = monthRecs(ym);
+  const times = ['0000Z','0300Z','0600Z','0900Z','1200Z','1500Z','1800Z','2100Z'];
+  let totals = Array(8).fill(0), counts = Array(8).fill(0);
+  let rows = '';
+  for (let d = 1; d <= days; d++) {
+    const am = getRec(recs, d, '0600'), pm = getRec(recs, d, '1200');
+    // windDir stored as string like "110" or "350"
+    const v0600 = (am?.windDir !== null && am?.windDir !== undefined && am?.windDir !== '') ? am.windDir : null;
+    const v1200 = (pm?.windDir !== null && pm?.windDir !== undefined && pm?.windDir !== '') ? pm.windDir : null;
+    const vals = [null, null, v0600, null, v1200, null, null, null];
+    vals.forEach((v, i) => {
+      if (v !== null) {
+        const n = parseInt(v, 10);
+        if (!isNaN(n)) { totals[i] += n; counts[i]++; }
+      }
+    });
+    rows += `<tr><td class="day-lbl">${d}</td>` +
+      vals.map(v => {
+        if (v === null) return slashCell();
+        const padded = String(parseInt(v, 10) || 0).padStart(3, '0');
+        return `<td class="data-filled">${padded}</td>`;
+      }).join('') + `</tr>`;
+  }
+  const totalRow = `<tr class="total-row"><td>TOTAL</td>` +
+    totals.map((t, i) => counts[i] ? `<td>${t}</td>` : `<td>—</td>`).join('') + `</tr>`;
+  const meanRow = `<tr class="mean-row"><td>MEAN</td>` +
+    totals.map((t, i) => counts[i] ? `<td><strong>${Math.round(t / counts[i])}</strong></td>` : `<td>—</td>`).join('') + `</tr>`;
+  const tblHtml = `<table class="official-tbl">
+    <thead><tr><th>DATE</th>${times.map(t => `<th>${t}</th>`).join('')}</tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot>${totalRow}${meanRow}</tfoot></table>`;
+  const sumHtml = makeSummaryTable([
+    ['0600Z mean', counts[2] ? `${Math.round(totals[2]/counts[2])}` : '—'],
+    ['1200Z mean', counts[4] ? `${Math.round(totals[4]/counts[4])}` : '—'],
+    ['Obs. days', `${counts[2] || counts[4]}`],
+  ]);
+  el.innerHTML = officialFormHtml('Form No. 10', 'Recording of Various Weather Parameters', '',
+    [['Station name', state.stationName], ['WMO Index No.', state.wmoIndex], ['Data type', 'WIND DIRECTION'], ['Month / Year', getMonthLabel(ym)]],
+    tblHtml, 'Effective Date: October 01, 2023', 'Revision No. 13', sumHtml);
+}
+
+/* ── FORM 92 — Sunshine Records ──
+   Daily total minutes and hours; hourly breakdown columns left blank (not entered per-hour) */
+function buildForm92Sunshine(ym) {
+  const el = document.getElementById('render-ret-92'); if (!el) return;
+  const [y, m] = ym.split('-').map(Number);
+  const days = daysInMonth(y, m), recs = monthRecs(ym);
+  let totalMins = 0, totalHrs = 0, countDays = 0;
+  let rows = '';
+  for (let d = 1; d <= days; d++) {
+    const am = getRec(recs, d, '0600');
+    const mins = am?.sunMins ?? null;
+    const hrs  = mins !== null ? (mins / 60) : null;
+    if (mins !== null) { totalMins += mins; totalHrs += hrs; countDays++; }
+    rows += `<tr>
+      <td class="day-lbl">${d}</td>
+      ${'<td class="slash-cell">////</td>'.repeat(15)}
+      ${mins !== null ? `<td class="data-filled">${mins}</td><td class="data-filled">${hrs.toFixed(1)}</td>` : `<td class="data-empty">—</td><td class="data-empty">—</td>`}
+    </tr>`;
+  }
+  const tblHtml = `<table class="official-tbl" style="min-width:600px">
+    <thead>
+      <tr>
+        <th rowspan="2">DATE</th>
+        <th colspan="15">HOURS ENDING (LT)</th>
+        <th colspan="2">DAILY TOTAL</th>
+      </tr>
+      <tr>
+        <th>0600</th><th>0700</th><th>0800</th><th>0900</th><th>1000</th><th>1100</th><th>1200</th>
+        <th>1300</th><th>1400</th><th>1500</th><th>1600</th><th>1700</th><th>1800</th><th>1900</th><th>2000</th>
+        <th>Min</th><th>Hrs</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td>Total (Mins)</td>
+        <td colspan="15">—</td>
+        <td><strong>${countDays ? totalMins : '—'}</strong></td>
+        <td><strong>${countDays ? totalHrs.toFixed(1) : '—'}</strong></td>
+      </tr>
+      <tr class="mean-row">
+        <td>Total (Hours)</td>
+        <td colspan="15">—</td>
+        <td colspan="2"><strong>${countDays ? totalHrs.toFixed(1) : '—'}</strong></td>
+      </tr>
+    </tfoot></table>`;
+  const sumHtml = makeSummaryTable([
+    ['Total sunshine', countDays ? `${totalHrs.toFixed(1)} hrs` : '—'],
+    ['Total minutes', countDays ? `${totalMins} min` : '—'],
+    ['Days recorded', `${countDays} / ${days}`],
+    ['Daily mean', countDays ? `${(totalHrs / countDays).toFixed(1)} hrs` : '—'],
+  ]);
+  el.innerHTML = officialFormHtml('Form No. 92', 'Sunshine Records', '',
+    [['Station', state.stationName], ['WMO Index No.', state.wmoIndex], ['Month', getMonthLabel(ym)]],
+    tblHtml, 'Effective Date: October 01, 2023', 'Revision No. 05', sumHtml);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -4944,6 +5104,9 @@ function refreshReturnStatus(ym) {
     {name:'Form 10 — Vapour Pressure',check:r=>r.vap!==null},
     {name:'AGRO 5 — Soil Moisture',check:r=>r.sm&&r.sm.d5!==null},
     {name:'Form 202 — Monthly Summary',check:r=>r.dry!==null},
+    {name:'Form 10 — Wind Speed',check:r=>r.windSpeed!==null},
+    {name:'Form 10 — Wind Direction',check:r=>!!r.windDir},
+    {name:'Form 92 — Sunshine Records',check:r=>r.sunMins!==null},
   ];
   el.innerHTML=forms.map(f=>{
     const cnt=recs.filter(f.check).length;
@@ -5958,7 +6121,8 @@ function filterDashObs(mode) {
 // ── Inject WA/SMS buttons into return form accordion headers ────
 function initReturnWASMSButtons() {
   const retIds = ['ret-626','ret-10c','ret-446','ret-616','ret-drybulb','ret-wetbulb',
-                  'ret-dewpoint','ret-rh','ret-vapour','ret-agro5','ret-agro1','ret-agro3','ret-agro4','ret-202'];
+                  'ret-dewpoint','ret-rh','ret-vapour','ret-agro5','ret-agro1','ret-agro3','ret-agro4','ret-202',
+                  'ret-windspeed','ret-winddir','ret-92'];
   retIds.forEach(id => {
     const hdr = document.getElementById('hdr-'+id);
     if (!hdr || hdr.querySelector('.ret-wa-btn')) return;
